@@ -48,7 +48,7 @@ ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 
 dt = 1e-10
-time_solver = Time_solver(simulator, dt, theta=1, t_stop=5e-7)
+time_solver = Time_solver(simulator, dt, theta=1, t_stop=5e-9)
 potential = PoissonPotential(simulator)
 
 # def mag_func(t):
@@ -69,7 +69,7 @@ simulator.initialize_simulator()
 
 print "initialized!"
 
-# live_plotter = Live_plotter(simulator)
+live_plotter = Live_plotter(simulator)
 
 fname = "/media/andreavs/datadrive/knp_sims_SI/advanced_step_function/zoom/pnp_zoom.h5"
 notes = "This simulation considers a step concentration profile in 1D, solved with PNP."

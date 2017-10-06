@@ -74,7 +74,7 @@ simulator.initialize_simulator()
 
 print "initialized!"
 
-# live_plotter = Live_plotter(simulator)
+live_plotter = Live_plotter(simulator)
 
 fname = dirname + "/knp_zoom.h5"
 notes = "This simulation considers a step concentration profile in 1D, solved with KNP."
