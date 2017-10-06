@@ -1,0 +1,80 @@
+from dolfin import *
+from potential import KirchoffPotential, PoissonPotential
+import sys
+# sys.path.insert(0, '/../manual_newton_fenics/')
+from manual_newton_fenics.newton import *
+import numpy as np
+
+class Time_solver:
+    def __init__(self, simulator, dt, theta = 1, t_start=0., t_stop=1.0, atol=1e-9, rtol = 1e-6, max_iter=10):
+        self.simulator = simulator
+        self.dt = dt
+        self.t_start = t_start
+        self.t = t_start
+        self.t_stop = t_stop
+        # self.dt = Constant(dt)
+        self.theta = theta
+        simulator.set_time_solver(self)
+        self.t_list = [t_start]
+        self.atol = atol
+        self.rtol = rtol
+        self.max_iter = max_iter
+
+
+    def set_time_step_size(self, dt):
+        self.dt = dt
+
+    def solve_for_time_step(self):
+        # update point sources:
+        # for delta in self.simulator.deltas:
+        #     delta.update_delta(self.t + self.theta*self.dt)
+
+        t_theta = self.t + self.theta*self.dt
+        t_new = self.t + self.dt
+        self.t_list.append(t_new)
+
+        # update source densities
+        for ion in self.simulator.ion_list:
+            ion.f.t = t_theta
+
+        pointsources = []
+        for delta in self.simulator.deltas:
+            I = 0
+            for current in delta.currents:
+                I_i = current.magnitude_function(t_theta)
+                I += I_i
+                if current.ion != None:
+                    pointsources.append(PointSource(self.simulator.geometry.W.sub(current.ion.index), delta.point, I_i/(self.simulator.F*current.ion.z)))
+            if isinstance(self.simulator.potential,KirchoffPotential):
+                print I
+                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N), delta.point, I))
+            # elif isinstance(self.simulator.potential,PoissonPotential):
+            #     print "adding PNP point source..."
+            #     conductance = np.mean(project(self.simulator.conductance, self.simulator.geometry.V).vector().array())
+            #     pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N), delta.point, I/conductance))
+
+
+        # call solver:
+        Newton_manual(self.simulator.Jac, self.simulator.form, \
+            self.simulator.u_new, self.simulator.u_res,bcs=self.simulator.bcs, \
+            deltas=pointsources, max_it=self.max_iter, atol = self.atol, rtol=self.rtol)
+        # solve(self.simulator.form==0, self.simulator.u_new, self.simulator.bcs)
+
+        # update old solution
+        assign(self.simulator.u, self.simulator.u_new)
+        print self.t
+        self.t += self.dt
+        if self.simulator.live_plotter:
+            self.simulator.live_plotter.plot()
+        if self.simulator.state_saver:
+            self.simulator.state_saver.save_state()
+
+
+
+
+
+    def solve(self):
+        while self.t < self.t_stop:
+            self.solve_for_time_step()
+        if self.simulator.state_saver:
+            self.simulator.state_saver.finalize()
