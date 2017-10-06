@@ -1,0 +1,173 @@
+% LaTeX file for a 1 page document
+\documentclass[12pt]{article}
+
+\title{Implementation of the Poisson-Nernst-Planck equations in FEniCS}
+
+
+
+
+\usepackage{amsmath}
+\usepackage{helvet}
+\usepackage{fullpage}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+%\usepackage{subfigure}
+\usepackage{epstopdf}
+\epstopdfsetup{update}
+\usepackage[hyphens]{url}
+\usepackage{gensymb}
+\usepackage{verbatim}
+%\usepackage{slashed}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage[]{units}
+\usepackage{verbatim}
+\usepackage{cprotect}
+\usepackage{cleveref}
+
+\newcommand{\Jvec}{\textbf{J}}
+\newcommand{\Ivec}{\textbf{I}}
+\newcommand{\xvec}{\textbf{x}}
+\newcommand{\yvec}{\textbf{y}}
+\newcommand{\Na}{\text{Na}}
+\newcommand{\K}{\text{K}}
+\newcommand{\Cl}{\text{Cl}}
+\newcommand{\nvec}{\textbf{n}}
+
+\newcommand{\dd}{\text{d}}
+
+\date{\today}
+\author{Andreas}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We will show how to implement the Poisson-Nernst-Planck (PNP) equations in FEniCS. 
+\end{abstract}
+
+\section{Introduction}
+We will study the dynamics of ions in a medium. We will consider a system of two ions. One positive ion with valency, indexed by 1, and one negative ion with valency -1, indexed by 2. We can think of the positive ion as potassium and the negative ion as chloride, although the spesific ion types will not be important in this text
+
+\section{The equations}
+The ion concentration dynamics are influenced by two principles: 
+\begin{enumerate}
+\item The ions will move by diffusion, from areas of with high concentration to areas of low concentration. 
+\item As the ions are charged, they will be influenced if there is an electric field present. For the same reason, the ions themselves will create an electric field. 
+\end{enumerate}
+We assume that these concentration currents are additive. Starting with the continuity equation, we get
+\begin{equation}
+{\partial c_i \over \partial t} = - \nabla \cdot \Jvec_i + f_i,
+\end{equation}
+where $c_i$ is the concentration of ion type $i$, $\Jvec_i$ is the concentration current of ion type $i$, and $f_i$ is a source term
+\begin{align}
+\Jvec_i & = \Jvec_i^\text{diff} + \Jvec_i^{\text{field}}, \\ 
+ &= -D_i\nabla c_i - {D_iz_i \over \psi} c_i \nabla \phi,
+\end{align}
+where $D_i$ is the diffusion coefficient, $z_i$ is the valency of ion type $i$, $\psi$ is a physical constant, and $\phi$ is the electric field. This equation is called the \textit{Nernst-Planck} equation. The electric field is found by the Poisson equation: 
+\begin{equation}
+\nabla^2 \phi = -{\rho \over \epsilon} = -{F \over \epsilon} \sum_i z_i c_i,
+\end{equation}
+where $\rho$ is the charge concentration, $F$ is Faradays constant, $\epsilon$ is the permittivity of the medium (in this case the extracellular space). Together, these equations form the \textit{Poisson-Nernst-Planck} (PNP) system of equations. We present the full set of equations: 
+
+\begin{align}
+{\partial c_1 \over \partial t} & = \nabla \cdot \left[ D_1\nabla c_1 + {D_1z_1 \over \psi} c_1 \nabla \phi \right] + f_1 \\ 
+{\partial c_2 \over \partial t} & = \nabla \cdot \left[ D_2\nabla c_2 + {D_2z_2 \over \psi} c_2 \nabla \phi\right] + f_2 \\ 
+\nabla^2 \phi & =-{F \over \epsilon} (z_1c_1 + z_2c_2)\label{eq:phi}
+\end{align}
+
+\section{Boundary Conditions}
+
+We will use Dirichlet boundary conditions for the concentrations, and a pure von Neumann boundary condition for the field: 
+\begin{align}
+c_1 & = c_1^D & \text{on } \partial \Omega \label{equ:c1}\\
+c_2 & = c_2^D & \text{on } \partial \Omega \label{equ:c2}\\
+\nabla \phi \cdot \nvec & = 0 & \text{on } \partial \Omega \label{equ:poisson} 
+\end{align}
+
+ 
+\section{Units and dimensions}
+Note that in terms of natural constants, $\psi = RT/F$, where $R$ is the gas constant, $F$ is Faradays constant and $T$ is the temperature.
+\begin{center}
+ \begin{tabular}{c|l|l}
+ symbol & explanation & units \\
+ \hline
+ $x$ & position & $\mu$m \\
+ $t$ & time & ms \\
+ $\phi$ & potential & V \\
+ $c_i$ & concentration & mmol/ml \\ 
+ $D_i$ & diffusion coefficient & $\mu$m$^2$/ms \\
+ $f_i$ & source term & mmol/(ml$\times$ms) \\
+ $z_i$ & valency & (none) \\
+ $\psi$ & see text & J/C \\
+ $F$ & Faradays Constant & C/mol \\
+ $\epsilon$ & permittivity & pF/m \\
+ \end{tabular}
+ \end{center}
+
+\section{FEniCS implementation}
+
+
+\subsection{Time discretization}
+We use a finite difference time discretization scheme, which means that we discretetize the time into equispaced points, $t^n$, were 
+\begin{equation}
+t^n = n\Delta t
+\end{equation}
+where $\Delta t$ is the space between adjacent time points. We let $c_i^n$ denote the value of $c_i$ at time $t^n$. In order to discretize equations \cref{equ:c1,equ:c2,equ:poisson} in time, we can set the left hand sides as 
+\begin{align}
+{\partial c_i \over \partial t} = {c_i^{n+1} - c_i^n \over \Delta t}, \\
+\nabla^2 \phi = \nabla^2 \phi^{n+1}.
+\end{align}
+One the right hand side, we can enter concentrations at either time $n$ or $n+1$. We can also enter a combination of the two. Generally, we can define
+\begin{equation}
+c^\theta = (1-\theta)c^n + \theta c^{n+1},
+\end{equation}
+we then set the right hand side as 
+\begin{equation}
+\nabla \cdot \left[ D_i\nabla c_i + {D_iz_i \over \psi} c_i \nabla \phi \right] + f_i = \nabla \cdot \left[ D_i\nabla c_i^\theta + {D_iz_i \over \psi} c_i \nabla \phi^\theta \right] + f_i^\theta.
+\end{equation}
+
+The Poisson equation is not time dependent, so we should solve for all elements at the same time step, 
+\begin{equation}
+\nabla^2 \phi^{n+1} = -{F \over \epsilon} (z_1c_1^{n+1} + z_2c_2^{n+1})
+\end{equation}
+
+
+
+\subsection{Weak form}
+
+\section{Method of Manufactured Solution}
+In order to test the implementation, we use the method of manufactured solution. We set the solution of the system of equations, and then modify the source term to make the chosen solution correct. Since we only have two source terms, we can only freely choose the solution of two of the equations, and then chose the last one so that the solutions are consistent. If we set the solution for $c_1$ and $\phi$, then we can find the solution of $c_2$ from Equation \eqref{eq:phi}. We also have to set $\phi$ so that it is consistent with the boundary conditions, as well as the additional condition $\int_\Omega \phi\, \text{d}x = 0$. We set the following set of solutions:
+\begin{align}
+c_1 &= \cos^3(x) \sin(t) \\ 
+\phi &= (\sin^2(\pi x) - 0.5)\cos^2(t) \\
+c_2 & = -{1\over z_2} \left( {F \over \epsilon}\nabla^2\phi + z_1c_1\right)
+\end{align}
+
+From this we get the following demands for the source terms: 
+\begin{align}
+f_1 & = {\partial c_1 \over \partial t} - \nabla \cdot\left[ D_1 \nabla c_1 + {D_1z_1 \over \psi} c_1 \nabla \phi \right] \\ 
+f_2 & = {\partial c_2 \over \partial t} - \nabla \cdot\left[ D_2 \nabla c_2 + {D_2z_2 \over \psi} c_2 \nabla \phi \right]
+\end{align}
+
+\section{Example 1: Ions in a box: Liquid Junction Potential}
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm]{drawing.pdf}
+\label{fig:ljp}
+\caption{The figure illustrates the Ions in a box example. The ions start out locked in the left side of the box. At $t=0$, the box is opened and the ions are allowed to move freely. The difference in diffusion constants creates an electric field.}
+\end{figure}
+
+
+
+\section{Example 2: Neuron in a dish}
+
+
+
+
+
+\end{document}
