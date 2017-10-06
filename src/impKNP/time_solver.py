@@ -1,8 +1,8 @@
 from dolfin import *
 from potential import KirchoffPotential, PoissonPotential
 import sys
-# sys.path.insert(0, '/../manual_newton_fenics/')
-from manual_newton_fenics.newton import *
+
+from newton.newton import *
 import numpy as np
 
 class Time_solver:

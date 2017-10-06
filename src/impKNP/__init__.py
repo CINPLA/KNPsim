@@ -7,4 +7,4 @@ from state_saver import *
 from time_solver import *
 from delta import *
 from live_plotter import *
-from new_neuron_interface import *
+from neuron_interface import *
