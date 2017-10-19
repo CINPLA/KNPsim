@@ -1,3 +1,10 @@
+"""
+This simulation sets up a 1-D system with a length of 2 um (starting at 49 um,
+ending at 51 um). The system has a larger concentration of K+ of the right side
+of the system. starting at t=0, the solutions on the left and right side are
+allowed to mix.
+"""
+
 import sys
 sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
 from impKNP import *
