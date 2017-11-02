@@ -10,7 +10,7 @@ import time
 
 p0 = Point(0,0,0)
 p1 = Point(400e-6,400e-6,40e-6)
-mesh = BoxMesh(p0, p1, 200, 200, 20)
+mesh = BoxMesh(p0, p1, 100, 100, 10)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -77,7 +77,7 @@ print "initialized!"
 
 live_plotter = Live_plotter(simulator)
 
-# fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/knp_short_strong.h5"
+fname = dirname + "/knp.h5"
 # notes = "This simulation considers a point source in a 2d grid, with knp"
 # state_saver = State_saver(fname,simulator, notes)
 

@@ -77,7 +77,7 @@ print "initialized!"
 
 # live_plotter = Live_plotter(simulator)
 
-fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/pnp_short_strong.h5"
+fname = dirname + "/pnp.h5"
 notes = "This simulation considers a point source in a 2d grid, with pnp"
 state_saver = State_saver(fname,simulator, notes)
 
