@@ -1,19 +1,16 @@
 import sys
 import os
 dirname, filename = os.path.split(os.path.abspath(__file__))
-rel_path = "/../../../"
+rel_path = "/../../"
 print dirname+rel_path
 sys.path.append(dirname+rel_path)
 from impKNP import *
 from dolfin import *
 import time
-# parameters['form_compiler']['optimize'] = True
 
-
-
-p0 = Point(0,0)
-p1 = Point(400e-6,400e-6)
-mesh = RectangleMesh(p0, p1, 200, 200)
+p0 = Point(0,0,0)
+p1 = Point(400e-6,400e-6,40e-6)
+mesh = BoxMesh(p0, p1, 200, 200, 20)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -49,14 +46,14 @@ c_boundary_K = init_cond_K
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 def mag_func(t):
-    return 1.0*(t<1e-1)*1e-5
+    return 1.0*(t<1e-1)*1e-9
 
 def neg_mag_func(t):
     return -mag_func(t)
 
 
-p1 = Point(280e-6,200e-6)
-p2 = Point(120e-6,200e-6)
+p1 = Point(280e-6, 200e-6, 20e-6)
+p2 = Point(120e-6, 200e-6, 20e-6)
 
 current_1 = Current(mag_func, ion_K)
 currents = [current_1]
@@ -80,8 +77,8 @@ print "initialized!"
 
 live_plotter = Live_plotter(simulator)
 
-fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/knp_short_strong.h5"
-notes = "This simulation considers a point source in a 2d grid, with knp"
-state_saver = State_saver(fname,simulator, notes)
+# fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/knp_short_strong.h5"
+# notes = "This simulation considers a point source in a 2d grid, with knp"
+# state_saver = State_saver(fname,simulator, notes)
 
 time_solver.solve()

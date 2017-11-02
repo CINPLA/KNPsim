@@ -57,7 +57,7 @@ class PoissonPotential(Potential):
             sigma += (1./psi)*ion.z**2*ion.D*ion.c
             b += ion.z*ion.D*ion.c
 
-        g = inner(nabla_grad(b)/a, FacetNormal(self.simulator.geometry.mesh))
+        g = inner(nabla_grad(b)/sigma, FacetNormal(self.simulator.geometry.mesh))
         F = Constant(self.simulator.F)
         eps = Constant(self.simulator.epsilon)
 
@@ -72,13 +72,15 @@ class PoissonPotential(Potential):
 
 
 
-class NoField(Potential):
+
+class ZeroPotential(Potential):
     """
     Returns a zero potential
     """
     def __init__(self, system):
         Potential.__init__(self, system)
 
-    def set_form(self):
-        (phi, c) = TrialFunction(self.W)
-        (v, d) = TestFunctions(self.W)
+    def set_form(self, form):
+        v, d = self.simulator.v_phi, self.simulator.d_phi
+        form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d)*dx
+        return form
