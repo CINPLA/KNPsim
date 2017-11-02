@@ -15,31 +15,21 @@ class State_saver:
         self.hdf.write(Function(simulator.geometry.V), "geometry/FunctionSpace")
         self.hdf.write(vertex_to_dof_map(simulator.geometry.V).astype(float), 'vertex_to_dof_map')
 
-        attribute_holder = Function(simulator.geometry.V) # dummy variable b/c i dont understand FEniCS
+        attribute_holder = Function(simulator.geometry.V)
         attribute_holder = self.hdf.write(attribute_holder, 'attributes')
         self.attributes = self.hdf.attributes('attributes')
 
         self.attributes['notes'] = notes
         self.attributes['number_of_ions'] = self.simulator.N
         ion_names = np.array([ion.name for ion in self.simulator.ion_list])
-        # self.hdf.write(ion_names, 'ion_names')
 
         # in case we only want every n-th step to be saved:
         self.save_step = save_step
         self.index = 0
         self.save_times = []
 
-        # self.simulator.potential.find_potential()
         self.hdf.write(self.simulator.u, '/initial_state')
         self.simtime_start = time.time()
-        #
-        # for idx,ion in enumerate(simulator.ion_list):
-        #     ion_string = 'ions/' + ion.name
-        #     self.hdf.write(self.simulator.u.sub(idx), ion_string + '/initial_concentration')
-        #     ion_attrs = self.hdf.attributes(ion_string)
-        #     ion_attrs['name'] = ion.name
-        #     ion_attrs['charge'] = str(ion.z)
-        #     ion_attrs['diffusion_constant'] = ion.D
         self.save_state()
 
 
@@ -55,11 +45,6 @@ class State_saver:
         if self.index == self.save_step:
             self.hdf.write(self.simulator.u, "/solution", self.simulator.time_solver.t)
             self.save_times.append(self.simulator.time_solver.t)
-            # identifier = "%.8f" % self.simulator.time_solver.t
-            # self.hdf.write(self.simulator.u.sub(self.simulator.N), "potential/",self.simulator.time_solver.t)
-            # # self.hdf.write(self.simulator.phi, 'potential/' + identifier)
-            # for idx,ion in enumerate(self.simulator.ion_list):
-            #     self.hdf.write(self.simulator.u.sub(idx), 'concentrations/' + ion.name + '/' + identifier)
             self.index = 0
 
 
@@ -77,10 +62,8 @@ class State_saver:
             grp.attrs['space'] = self.simulator.geometry.space
             grp.attrs['order'] = self.simulator.geometry.order
             dset_time = f.create_dataset("time", (np.size(self.simulator.time_solver.t_list),), dtype='f')
-            # print self.simulator
             dset_time[...] = np.array(self.simulator.time_solver.t_list)
             dset_time = f.create_dataset("save_time", (np.size(self.save_times),), dtype='f')
-            # print self.simulator
             dset_time[...] = np.array(self.save_times)
 
 

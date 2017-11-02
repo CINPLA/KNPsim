@@ -15,7 +15,7 @@ class Simulator:
         self.state_saver = None
         self.live_plotter = None
         self.T = T
-        self.R = 8.314 # Rayleighs constant, J/(K*mol)
+        self.R = 8.314 # gas constant, J/(K*mol)
         self.F = 9.648e4 # Faradays constant, C/mol
         self.eps_0 = 8.854187e-12 # F/m
         self.psi = self.R*self.T/self.F
@@ -61,18 +61,15 @@ class Simulator:
         self.v_list = TestFunctions(self.geometry.W)
 
 
-        # u_split = self.u.split()
-        # u_new_split = self.u_new.split()
+
         for i, ion in enumerate(self.ion_list):
             if ion.boundary_condition != None:
                 bc = DirichletBC(self.geometry.W.sub(i), ion.boundary_condition, boundary)
                 self.bcs.append(bc)
             ion.c = self.u[i]
             assign(self.u.sub(i), interpolate(ion.initial_condition, self.geometry.V))
-
             ion.c_new = self.u_new[i]
             assign(self.u_new.sub(i), interpolate(ion.initial_condition, self.geometry.V))
-            # ion.c_theta = (1-self.time_solver.theta)*ion.c + self.time_solver.theta*ion.c_new
             ion.v = self.v_list[i]
 
         if self.potential.bc != None:
@@ -81,43 +78,33 @@ class Simulator:
         [bc.apply(self.u.vector()) for bc in self.bcs]
         [bc.apply(self.u_new.vector()) for bc in self.bcs]
         n = len(self.ion_list)
-        # for delta in self.deltas:
-        #     delta.function_space = self.geometry.W.sub(delta.ion.index)
+
         self.potential.phi = self.u[n]
         self.potential.phi_new = self.u_new[n]
-        # self.potential.phi_theta = (1-self.time_solver.theta)*self.potential.phi \
-        #     + self.time_solver.theta*self.potential.phi_new
         self.potential.dummy = self.u[n+1]
         self.potential.dummy_new = self.u_new[n+1]
         self.v_phi, self.d_phi = self.v_list[n], self.v_list[n+1]
 
-        self.potential.find_initial_potential()
         self.conductance = 0
-
         for i, ion in enumerate(self.ion_list):
             self.conductance = self.conductance + self.F*ion.D*ion.z**2*ion.c/self.psi
         self.set_form()
 
     def set_form(self):
+        """
+        This function is called by initialize_simulator in order to set up the variational form
+        """
         self.form = 0
         psi, dt = self.psi, self.time_solver.dt
-        phi = self.potential.phi
         phi_new = self.potential.phi_new
-        theta = self.time_solver.theta
-        phi_theta = (1-theta)*phi + theta*phi_new
         for i, ion in enumerate(self.ion_list):
-            v = ion.v
             c, c_new, f, D, z = ion.c, ion.c_new, ion.f, ion.D, ion.z
-            c_theta = (1-theta)*c + theta*c_new
             v = self.v_list[i]
             k = Constant(1/self.time_solver.dt)
-            self.form += (k*(c_new - c)*v + inner(D*nabla_grad(c_theta) + \
-                D*c_theta*z*nabla_grad(phi_theta)/psi, nabla_grad(v)) - f*v)*dx
-            # self.form += c_new*v*dx
+            self.form += (k*(c_new - c)*v + inner(D*nabla_grad(c_new) + \
+                D*c_new*z*nabla_grad(phi_new)/psi, nabla_grad(v)) - f*v)*dx
 
-        # self.form += self
         self.form = self.potential.set_form(self.form)
-
         self.w = TrialFunction(self.geometry.W)
         self.Jac = derivative(self.form, self.u_new, self.w)
         self.A = assemble(self.Jac)

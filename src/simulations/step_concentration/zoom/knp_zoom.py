@@ -15,7 +15,7 @@ x1 = 50.1e-6
 xmid = 50e-6
 
 
-mesh = IntervalMesh(10000, x0, x1)
+mesh = IntervalMesh(1000, x0, x1)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -38,7 +38,6 @@ z_Cl = -1
 D_Cl = 2.03e-9/lambda_o**2
 init_Cl = init_cond_Cl
 c_boundary_Cl = init_cond_Cl
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 
@@ -53,7 +52,7 @@ ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 
 dt = 1e-10
-time_solver = Time_solver(simulator, dt, theta=1, t_stop=5e-9)
+time_solver = Time_solver(simulator, dt, t_stop=5e-9)
 potential = KirchoffPotential(simulator)
 
 # def mag_func(t):
@@ -76,9 +75,9 @@ print "initialized!"
 
 live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp_zoom.h5"
-notes = "This simulation considers a step concentration profile in 1D, solved with KNP."
-state_saver = State_saver(fname,simulator, notes)
+# fname = dirname + "/knp_zoom.h5"
+# notes = "This simulation considers a step concentration profile in 1D, solved with KNP."
+# state_saver = State_saver(fname,simulator, notes)
 
 # live_plotter.plot()
 time_solver.solve()

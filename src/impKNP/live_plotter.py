@@ -11,21 +11,16 @@ class Live_plotter:
             self.plot_functions.append(Function(self.simulator.geometry.V))
 
 
-        #### LFPy plotting function:
 
     def plot(self):
         rho = Function(self.simulator.geometry.V)
-        # for ion in self.simulator.ion_list:
-        #     rho += self.simulator.F*ion.z*ion.c
 
         for (idx, ion) in enumerate(self.simulator.ion_list):
             rho += ion.z*ion.c
             assign(self.plot_functions[idx],self.simulator.u.sub(idx))
             plot(self.plot_functions[idx], title=ion.name + ", t=" + str(self.simulator.time_solver.t))
 
-        #project(rho, self.simulator.geometry.V)
         assign(self.plot_functions[self.simulator.N],self.simulator.u.sub(self.simulator.N))
         plot(self.plot_functions[self.simulator.N], title="Potential")
         self.total_charge.assign(project(rho,self.simulator.geometry.V))
         plot(self.total_charge, title="total charge")
-        # interactive()

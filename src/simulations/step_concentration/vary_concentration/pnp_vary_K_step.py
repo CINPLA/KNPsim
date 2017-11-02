@@ -54,7 +54,7 @@ for k_concentration in K_list:
 
 
     dt = 1e-10
-    time_solver = Time_solver(simulator, dt, theta=1, t_stop=2e-7, max_iter=4)
+    time_solver = Time_solver(simulator, dt, theta=1, t_stop=2e-7, max_iter=6)
     potential = PoissonPotential(simulator)
 
     # def mag_func(t):
