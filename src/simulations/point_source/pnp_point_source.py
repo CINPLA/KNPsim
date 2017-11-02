@@ -1,9 +1,12 @@
 import sys
-sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
+import os
+dirname, filename = os.path.split(os.path.abspath(__file__))
+rel_path = "/../../../"
+print dirname+rel_path
+sys.path.append(dirname+rel_path)
 from impKNP import *
 from dolfin import *
 import time
-# parameters['form_compiler']['optimize'] = True
 
 p0 = Point(0,0)
 p1 = Point(400e-6,400e-6)

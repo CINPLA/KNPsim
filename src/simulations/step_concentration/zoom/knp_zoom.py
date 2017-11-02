@@ -1,5 +1,4 @@
 import sys
-print sys.argv[0]
 import os
 dirname, filename = os.path.split(os.path.abspath(__file__))
 rel_path = "/../../../"
@@ -8,7 +7,6 @@ sys.path.append(dirname+rel_path)
 from impKNP import *
 from dolfin import *
 import time
-# parameters['form_compiler']['optimize'] = True
 
 x0 = 49.9e-6
 x1 = 50.1e-6
@@ -46,7 +44,6 @@ z_K = 1
 D_K = 1.96e-9/lambda_o**2
 init_K = init_cond_K
 c_boundary_K = init_cond_K
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 
@@ -55,29 +52,10 @@ dt = 1e-10
 time_solver = Time_solver(simulator, dt, t_stop=5e-9)
 potential = KirchoffPotential(simulator)
 
-# def mag_func(t):
-#     return 1
-#
-# def neg_mag_func(t):
-#     return -mag_func(t)
-
-# delta = Delta(ion_Na, Point(20), mag_func)
-# simulator.add_point_source(delta)
-#
-# delta = Delta(ion_Cl, Point(80), mag_func)
-# simulator.add_point_source(delta)
 
 print "initializing"
-
 simulator.initialize_simulator()
-
 print "initialized!"
 
 live_plotter = Live_plotter(simulator)
-
-# fname = dirname + "/knp_zoom.h5"
-# notes = "This simulation considers a step concentration profile in 1D, solved with KNP."
-# state_saver = State_saver(fname,simulator, notes)
-
-# live_plotter.plot()
 time_solver.solve()

@@ -6,13 +6,14 @@ allowed to mix.
 """
 
 import sys
-sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
+import os
+dirname, filename = os.path.split(os.path.abspath(__file__))
+rel_path = "/../../../"
+print dirname+rel_path
+sys.path.append(dirname+rel_path)
 from impKNP import *
 from dolfin import *
 import time
-# parameters['form_compiler']['optimize'] = True
-
-
 
 K_list = [2.5, 5, 10, 20,40, 80]
 
@@ -54,7 +55,7 @@ for k_concentration in K_list:
 
 
     dt = 1e-10
-    time_solver = Time_solver(simulator, dt, theta=1, t_stop=2e-7, max_iter=6)
+    time_solver = Time_solver(simulator, dt, t_stop=2e-7, max_iter=6)
     potential = PoissonPotential(simulator)
 
     # def mag_func(t):

@@ -1,5 +1,9 @@
 import sys
-sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
+import os
+dirname, filename = os.path.split(os.path.abspath(__file__))
+rel_path = "/../../../"
+print dirname+rel_path
+sys.path.append(dirname+rel_path)
 from impKNP import *
 from dolfin import *
 import time
@@ -65,7 +69,7 @@ delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
 dt = 1e-4
-time_solver = Time_solver(simulator, dt, theta=1, t_stop=2e-1)
+time_solver = Time_solver(simulator, dt, t_stop=2e-1)
 potential = KirchoffPotential(simulator)
 
 print "initializing"
@@ -74,7 +78,7 @@ simulator.initialize_simulator()
 
 print "initialized!"
 
-# live_plotter = Live_plotter(simulator)
+live_plotter = Live_plotter(simulator)
 
 fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/knp_short_strong.h5"
 notes = "This simulation considers a point source in a 2d grid, with knp"
