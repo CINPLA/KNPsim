@@ -10,7 +10,7 @@ import time
 
 p0 = Point(0,0,0)
 p1 = Point(400e-6,400e-6,40e-6)
-mesh = BoxMesh(p0, p1, 100, 100, 10)
+mesh = BoxMesh(p0, p1, 50, 50, 10)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -65,7 +65,7 @@ currents = [current_2]
 delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
-dt = 1e-4
+dt = 1e-2
 time_solver = Time_solver(simulator, dt, t_stop=2e-1)
 potential = KirchoffPotential(simulator)
 
@@ -75,10 +75,10 @@ simulator.initialize_simulator()
 
 print "initialized!"
 
-live_plotter = Live_plotter(simulator)
+# live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp.h5"
-# notes = "This simulation considers a point source in a 2d grid, with knp"
-# state_saver = State_saver(fname,simulator, notes)
+fname = dirname + "/knp_test_decoupled_field_2.h5"
+notes = "This simulation considers a point source in a 3d grid, with knp"
+state_saver = State_saver(fname,simulator, notes)
 
 time_solver.solve()

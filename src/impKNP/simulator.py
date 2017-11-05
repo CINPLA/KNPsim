@@ -52,15 +52,18 @@ class Simulator:
         assert(self.time_solver != None)
         assert(self.potential != None)
         self.bcs = []
-        function_space_list = [self.geometry.V]*(self.N+1)
-        function_space_list.append(self.geometry.R)
+        # Function spaces for concentrations:
+        function_space_list = [self.geometry.V]*(self.N)
+        # Function spaces for potential:
+        function_space_list.extend([self.geometry.V,self.geometry.V])
+        # Function spaces for potential point sources:
+        function_space_list.extend([self.geometry.R,self.geometry.R])
+
         self.geometry.W = MixedFunctionSpace(function_space_list)
         self.u = Function(self.geometry.W)
         self.u_new = Function(self.geometry.W)
         self.u_res = Function(self.geometry.W)
         self.v_list = TestFunctions(self.geometry.W)
-
-
 
         for i, ion in enumerate(self.ion_list):
             if ion.boundary_condition != None:
@@ -81,13 +84,22 @@ class Simulator:
 
         self.potential.phi = self.u[n]
         self.potential.phi_new = self.u_new[n]
-        self.potential.dummy = self.u[n+1]
-        self.potential.dummy_new = self.u_new[n+1]
-        self.v_phi, self.d_phi = self.v_list[n], self.v_list[n+1]
+
+        self.potential.dummy = self.u[n+2]
+        self.potential.dummy_new = self.u_new[n+2]
+
+        self.potential.phi_ps = self.u[n+1]
+        self.potential.phi_ps_new = self.u_new[n+1]
+
+        self.potential.dummy_ps = self.u[n+3]
+        self.potential.dummy_ps_new = self.u_new[n+3]
+
+        self.v_phi, self.d_phi = self.v_list[n], self.v_list[n+2]
+        self.v_phi_ps, self.d_phi_ps = self.v_list[n+1], self.v_list[n+3]
 
         self.conductance = 0
         for i, ion in enumerate(self.ion_list):
-            self.conductance = self.conductance + self.F*ion.D*ion.z**2*ion.c/self.psi
+            self.conductance = self.conductance + self.F*ion.D*ion.z**2*ion.c_new/self.psi
         self.set_form()
 
     def set_form(self):
@@ -96,7 +108,7 @@ class Simulator:
         """
         self.form = 0
         psi, dt = self.psi, self.time_solver.dt
-        phi_new = self.potential.phi_new
+        phi_new = self.potential.phi_new + self.potential.phi_ps_new
         for i, ion in enumerate(self.ion_list):
             c, c_new, f, D, z = ion.c, ion.c_new, ion.f, ion.D, ion.z
             v = self.v_list[i]

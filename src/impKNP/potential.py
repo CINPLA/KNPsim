@@ -37,6 +37,9 @@ class KirchoffPotential(Potential):
             f += ion.z*ion.f
 
         form += F*(inner(sigma*nabla_grad(self.phi_new) + nabla_grad(b), nabla_grad(v)) + self.phi_new*d + v*self.dummy_new - f*v)*dx
+
+        v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
+        form += F*(inner(sigma*nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
         return form
 
 
@@ -65,9 +68,11 @@ class PoissonPotential(Potential):
         for ion in self.simulator.ion_list:
             rho += F*ion.z*ion.c_new
 
-
         form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d - rho*v/eps)*dx
         form += g*v*ds
+
+        v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
+        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
         return form
 
 
@@ -83,4 +88,8 @@ class ZeroPotential(Potential):
     def set_form(self, form):
         v, d = self.simulator.v_phi, self.simulator.d_phi
         form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d)*dx
+
+        v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
+        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+
         return form

@@ -33,12 +33,12 @@ class Time_solver:
         for delta in self.simulator.deltas:
             I = 0
             for current in delta.currents:
-                I_i = current.magnitude_function(t)
+                I_i = current.magnitude_function(self.t)
                 I += I_i
                 if current.ion != None:
                     pointsources.append(PointSource(self.simulator.geometry.W.sub(current.ion.index), delta.point, I_i/(self.simulator.F*current.ion.z)))
             if isinstance(self.simulator.potential,KirchoffPotential):
-                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N), delta.point, I))
+                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N+1), delta.point, I))
 
 
         # call solver:
