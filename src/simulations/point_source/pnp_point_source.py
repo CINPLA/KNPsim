@@ -10,7 +10,7 @@ import time
 
 p0 = Point(0,0,0)
 p1 = Point(400e-6,400e-6,40e-6)
-mesh = BoxMesh(p0, p1, 200, 200, 20)
+mesh = BoxMesh(p0, p1, 50, 50, 5)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -65,8 +65,8 @@ currents = [current_2]
 delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
-dt = 1e-4
-time_solver = Time_solver(simulator, dt, theta=1, t_stop=2e-1)
+dt = 1e-3
+time_solver = Time_solver(simulator, dt, t_stop=2e-1)
 potential = PoissonPotential(simulator)
 
 print "initializing"

@@ -39,7 +39,7 @@ ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 dt = 1e-3
 time_solver = Time_solver(simulator, dt, t_stop=1, rtol=1e-3)
-potential = KirchoffPotential(simulator)
+potential = ZeroPotential(simulator)
 
 print "initializing"
 simulator.initialize_simulator()
@@ -47,7 +47,7 @@ print "initialized!"
 
 # live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp_binary_long.h5"
+fname = dirname + "/diffusion_binary_long.h5"
 notes = "This simulation considers a step concentration profile in 1D, solved with KNP."
 state_saver = State_saver(fname,simulator, notes)
 

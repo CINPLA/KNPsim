@@ -38,7 +38,7 @@ c_boundary_Cl = init_cond_Cl
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 dt = 1e-10
-time_solver = Time_solver(simulator, dt, t_stop=5e-9)
+time_solver = Time_solver(simulator, dt, t_stop=1e-7, rtol=1e-5)
 potential = PoissonPotential(simulator)
 
 print "initializing"

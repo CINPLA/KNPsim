@@ -1,6 +1,7 @@
 from dolfin import *
 from potential import KirchoffPotential, PoissonPotential
 import sys
+import time
 
 from newton.newton import *
 import numpy as np
@@ -49,7 +50,8 @@ class Time_solver:
 
         # update old solution
         assign(self.simulator.u, self.simulator.u_new)
-        print self.t
+        if MPI.rank(mpi_comm_world()) == 0:
+            print "Current time in simulation: " + str(self.t)
         self.t += self.dt
         if self.simulator.live_plotter:
             self.simulator.live_plotter.plot()
@@ -59,6 +61,10 @@ class Time_solver:
 
     def solve(self):
         while self.t < self.t_stop:
+            sim_t0 = time.clock()
             self.solve_for_time_step()
+            sim_t1 = time.clock()
+            if MPI.rank(mpi_comm_world()) == 0:
+                print "The time step was solved in " + str(sim_t1-sim_t0) + " seconds."
         if self.simulator.state_saver:
             self.simulator.state_saver.finalize()

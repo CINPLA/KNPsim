@@ -66,8 +66,8 @@ class Simulator:
         self.v_list = TestFunctions(self.geometry.W)
 
         for i, ion in enumerate(self.ion_list):
-            if ion.boundary_condition != None:
-                bc = DirichletBC(self.geometry.W.sub(i), ion.boundary_condition, boundary)
+            if ion.boundary != None:
+                bc = DirichletBC(self.geometry.W.sub(i), ion.boundary_condition, ion.boundary)
                 self.bcs.append(bc)
             ion.c = self.u[i]
             assign(self.u.sub(i), interpolate(ion.initial_condition, self.geometry.V))
@@ -123,7 +123,3 @@ class Simulator:
 
     def add_point_source(self,delta):
         self.deltas.append(delta)
-
-
-def boundary(x, on_boundary):
-    return on_boundary
