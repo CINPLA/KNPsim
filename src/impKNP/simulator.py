@@ -107,10 +107,10 @@ class Simulator:
         This function is called by initialize_simulator in order to set up the variational form
         """
         self.form = 0
-        psi, dt = self.psi, self.time_solver.dt
+        psi, dt = Constant(self.psi), Constant(self.time_solver.dt)
         phi_new = self.potential.phi_new + self.potential.phi_ps_new
         for i, ion in enumerate(self.ion_list):
-            c, c_new, f, D, z = ion.c, ion.c_new, ion.f, ion.D, ion.z
+            c, c_new, f, D, z = ion.c, ion.c_new, ion.f, Constant(ion.D), Constant(ion.z)
             v = self.v_list[i]
             k = Constant(1/self.time_solver.dt)
             self.form += (k*(c_new - c)*v + inner(D*nabla_grad(c_new) + \

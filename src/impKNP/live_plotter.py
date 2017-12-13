@@ -7,8 +7,9 @@ class Live_plotter:
         self.simulator = simulator
         self.total_charge = Function(self.simulator.geometry.V)
         self.plot_functions = []
-        for i in range(len(self.simulator.ion_list)+1):
+        for i in range(len(self.simulator.ion_list)+2):
             self.plot_functions.append(Function(self.simulator.geometry.V))
+
 
 
 
@@ -20,7 +21,11 @@ class Live_plotter:
             assign(self.plot_functions[idx],self.simulator.u.sub(idx))
             plot(self.plot_functions[idx], title=ion.name + ", t=" + str(self.simulator.time_solver.t))
 
+
         assign(self.plot_functions[self.simulator.N],self.simulator.u.sub(self.simulator.N))
+        assign(self.plot_functions[self.simulator.N+1],self.simulator.u.sub(self.simulator.N+1))
+        self.plot_functions[self.simulator.N].assign(project(self.plot_functions[self.simulator.N]+self.plot_functions[self.simulator.N+1],self.simulator.geometry.V))
         plot(self.plot_functions[self.simulator.N], title="Potential")
-        self.total_charge.assign(project(rho,self.simulator.geometry.V))
+        self.total_charge.assign(project(self.simulator.potential.rho,self.simulator.geometry.V))
         plot(self.total_charge, title="total charge")
+        # interactive()
