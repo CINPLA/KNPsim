@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12, max_it=20,
-                  relax=0.9, report_convergence=True):
+                  relax=1.0, report_convergence=True):
     parameters['form_compiler']['optimize'] = True
     parameters['form_compiler']['cpp_optimize'] = True
     # parameters['form_compiler']['cpp_optimize_flags'] = '-O3'

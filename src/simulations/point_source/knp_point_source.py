@@ -9,8 +9,8 @@ from dolfin import *
 import time
 
 p0 = Point(0,0,0)
-p1 = Point(200e-6,200e-6,20e-6)
-mesh = BoxMesh(p0, p1, 100, 100, 10)
+p1 = Point(400e-6,400e-6,20e-6)
+mesh = BoxMesh(p0, p1, 30, 30, 5)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
@@ -54,13 +54,13 @@ ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 def mag_func(t):
     ecsfrac = 0.2
-    return 1.0*(t<1e0)*1e-9/ecsfrac
+    return 1.0*(t<1e0)*1e-10/ecsfrac
 
 def neg_mag_func(t):
     return -mag_func(t)
 
-p1 = Point(50e-6, 100e-6, 10e-6)
-p2 = Point(150e-6, 100e-6, 10e-6)
+p1 = Point(120e-6, 200e-6, 10e-6)
+p2 = Point(280e-6, 200e-6, 10e-6)
 
 current_1 = Current(mag_func, ion_K)
 currents = [current_1]
@@ -72,7 +72,7 @@ currents = [current_2]
 delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
-dt = 1e-2
+dt = 2e-3
 time_solver = Time_solver(simulator, dt, t_stop=2e0)
 potential = KirchoffPotential(simulator)
 
@@ -84,7 +84,7 @@ print "initialized!"
 
 # live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp_long_with_ca_high_res_ecsfrac.h5"
+fname = dirname + "/knp_long_with_ca_low_res_ecsfrac.h5"
 notes = "This simulation considers a point source in a 3d grid, with knp"
 state_saver = State_saver(fname,simulator, notes)
 
