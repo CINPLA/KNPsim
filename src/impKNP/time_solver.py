@@ -39,7 +39,7 @@ class Time_solver:
                 if current.ion != None:
                     pointsources.append(PointSource(self.simulator.geometry.W.sub(current.ion.index), delta.point, I_i/(self.simulator.F*current.ion.z)))
             if isinstance(self.simulator.potential,KirchoffPotential):
-                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N+1), delta.point, I))
+                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N+1), delta.point, -I))
 
 
         # call solver:

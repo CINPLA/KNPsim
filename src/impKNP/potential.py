@@ -22,6 +22,12 @@ class KirchoffPotential(Potential):
         Potential.__init__(self, simulator, bc)
 
     def set_form(self,form):
+        rho = Function(self.simulator.geometry.V)
+        for ion in self.simulator.ion_list:
+            rho += self.simulator.F*ion.z*ion.c_new
+
+        self.rho=rho
+
         v, d = self.simulator.v_phi, self.simulator.d_phi
         sigma = interpolate(Constant(0), self.simulator.geometry.V)
         b = interpolate(Constant(0), self.simulator.geometry.V)
@@ -87,6 +93,7 @@ class ZeroPotential(Potential):
         Potential.__init__(self, system)
 
     def set_form(self, form):
+
         v, d = self.simulator.v_phi, self.simulator.d_phi
         form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d)*dx
 

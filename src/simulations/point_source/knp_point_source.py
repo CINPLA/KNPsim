@@ -54,7 +54,7 @@ ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 def mag_func(t):
     ecsfrac = 0.2
-    return 1.0*(t<1e0)*1e-10/ecsfrac
+    return 0.1*(t<1e0)*1e-9/ecsfrac
 
 def neg_mag_func(t):
     return -mag_func(t)
