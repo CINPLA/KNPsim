@@ -14,7 +14,7 @@ class Simulator:
         self.potential = None
         self.state_saver = None
         self.live_plotter = None
-        self.T = T
+        self.T = T # K
         self.R = 8.314 # gas constant, J/(K*mol)
         self.F = 9.648e4 # Faradays constant, C/mol
         self.eps_0 = 8.854187e-12 # F/m

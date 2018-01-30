@@ -14,7 +14,7 @@ class Ion:
 
 class AnalysisTools:
     def __init__(self, filename):
-        self.F = 9.648e1 # Faradays constant, C/mM
+        self.F = 9.648e4 # Faradays constant, C/mol
         hdfpy = h5py.File(filename, 'r')
         ions = hdfpy['ions']
         self.N = len(ions.keys())

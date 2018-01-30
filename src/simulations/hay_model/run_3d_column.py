@@ -10,9 +10,7 @@ import numpy as np
 
 ECSfrac = 0.2 # Fraction of tissue being extracellular space
 
-# d = sio.loadmat('currsums_parts_10000areagsynsmediumtau_fixeddt_type2_amp4.2e-05_tstop10000.0_nseg20_dt0.025_seed1_sim0x200.0.mat')
 d = sio.loadmat('revdata_100fold.mat')
-
 
 mesh = Mesh()
 f = HDF5File(mesh.mpi_comm(), "mesh_co.hdf5", 'r')
@@ -25,13 +23,7 @@ y_coor = mesh.coordinates()[:,1]
 ymin = y_coor.min()
 ymax = y_coor.max()
 
-# print mesh.coordinates().shape
-# asdsa
-
 print "loaded mesh and made spaces!"
-
-# def boundary(x, on_boundary):
-#     return on_boundary and (((x[1] - ymin) < DOLFIN_EPS) or ((ymax - x[2]) < DOLFIN_EPS))
 
 def boundary(x, on_boundary):
     return on_boundary
