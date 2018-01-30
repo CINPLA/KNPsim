@@ -1,5 +1,3 @@
-from dolfin import *
-
 class Geometry:
     """
     This class keeps track of mesh and the function space of the electro

@@ -5,8 +5,8 @@ from .geometry import Geometry
 from .ion import Ion
 from .potential import Potential
 from .simulator import Simulator
-from state_saver import *
-from time_solver import *
-from delta import *
-from live_plotter import *
-from neuron_interface import *
+from .state_saver import State_saver
+from .time_solver import Time_solver
+from .delta import Delta
+from .live_plotter import Live_plotter
+from .neuron_interface import neuron_interface
