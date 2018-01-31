@@ -1,19 +1,19 @@
 import sys
 from dolfin import *
-from ion import Ion
-from time_solver import Time_solver
+from .ion import Ion
+from .time_solver import Time_solver
 
 
 class Simulator:
     def __init__(self, geometry, T=300.):
         self.ion_list = []
-        self.dt = Expression("dt", dt=0)
+        self.dt = Expression("dt", dt=0, degree=2)
         self.geometry = geometry
         self.time_solver = None
         self.potential = None
         self.state_saver = None
         self.live_plotter = None
-        self.T = T                              # K
+        self.T = T                              # temperature, K
         self.R = 8.314                          # gas constant, J/(K*mol)
         self.F = 9.648e4                        # Faradays constant, C/mol
         self.eps_0 = 8.854187e-12               # vacuum permittivity, F/m
