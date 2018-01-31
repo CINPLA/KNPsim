@@ -2,8 +2,19 @@ import sys
 import random
 from dolfin import *
 
+
 class Ion:
-    def __init__(self, simulator, charge, diffusion_coefficient, initial_condition, boundary_concentration, boundary, name, f=Expression("0", degree=2, t=0)):
+    def __init__(
+            self,
+            simulator,
+            charge,
+            diffusion_coefficient,
+            initial_condition,
+            boundary_concentration,
+            boundary,
+            name,
+            f=Expression("0", degree=2, t=0)
+            ):
         self.z = charge
         self.D = diffusion_coefficient
         self.name = name
@@ -19,6 +30,6 @@ class Ion:
         elif isinstance(initial_condition, Constant):
             self.initial_condition = initial_condition
         else:
-            print "initial_condition is unexpected type! Exiting..."
+            print("initial_condition is unexpected type! Exiting...")
             sys.exit(1)
         # TODO: Accept more types...

@@ -1,5 +1,7 @@
 import sys
 from dolfin import *
+
+
 class Potential:
     """
     Contains the electric field used in the electro-diffusion solver
@@ -10,10 +12,10 @@ class Potential:
         self.bc = bc
 
     def set_form(self, form):
-        print "Error! The Potential super class should be thought of as abstract!"
+        print("Error! You should always use a subclass of Potential!")
         sys.exit(1)
 
-#
+
 class KirchoffPotential(Potential):
     """
     Contains details on potential spesific for the KNP formalism
@@ -21,13 +23,12 @@ class KirchoffPotential(Potential):
     def __init__(self, simulator, bc=None):
         Potential.__init__(self, simulator, bc)
 
-    def set_form(self,form):
+    def set_form(self, form):
         rho = Function(self.simulator.geometry.V)
         for ion in self.simulator.ion_list:
             rho += self.simulator.F*ion.z*ion.c_new
 
-        self.rho=rho
-
+        self.rho = rho
         v, d = self.simulator.v_phi, self.simulator.d_phi
         sigma = interpolate(Constant(0), self.simulator.geometry.V)
         b = interpolate(Constant(0), self.simulator.geometry.V)
@@ -42,12 +43,19 @@ class KirchoffPotential(Potential):
             b += ion.z*ion.D*ion.c_new
             f += ion.z*ion.f
 
-        form += Constant(F)*(inner(sigma*nabla_grad(self.phi_new) + nabla_grad(b), nabla_grad(v)) + self.phi_new*d + v*self.dummy_new - f*v)*dx
+        form += Constant(F)*(inner(
+                sigma*nabla_grad(self.phi_new) + nabla_grad(b), nabla_grad(v)
+            ) +
+            self.phi_new*d + v*self.dummy_new - f*v)*dx
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += F*(inner(sigma*nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+        form += F*(
+            inner(
+                sigma*nabla_grad(self.phi_ps_new), nabla_grad(v)
+            ) +
+            self.phi_ps_new*d + v*self.dummy_ps_new
+        )*dx
         return form
-
 
 
 class PoissonPotential(Potential):
@@ -66,7 +74,10 @@ class PoissonPotential(Potential):
             sigma += (1./psi)*ion.z**2*ion.D*ion.c
             b += ion.z*ion.D*ion.c
 
-        g = inner(nabla_grad(b)/sigma, FacetNormal(self.simulator.geometry.mesh))
+        g = inner(
+            nabla_grad(b)/sigma,
+            FacetNormal(self.simulator.geometry.mesh)
+            )
         F = Constant(self.simulator.F)
         eps = Constant(self.simulator.epsilon)
 
@@ -74,15 +85,19 @@ class PoissonPotential(Potential):
         for ion in self.simulator.ion_list:
             rho += F*ion.z*ion.c_new
 
-        self.rho=rho
-        form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d - rho*v/eps)*dx
+        self.rho = rho
+        form += (
+            inner(nabla_grad(self.phi_new), nabla_grad(v)) +
+            self.dummy_new*v + self.phi_new*d - rho*v/eps
+            )*dx
         form += g*v*ds
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+        form += (
+            inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
+            self.phi_ps_new*d + v*self.dummy_ps_new
+            )*dx
         return form
-
-
 
 
 class ZeroPotential(Potential):
@@ -95,9 +110,17 @@ class ZeroPotential(Potential):
     def set_form(self, form):
 
         v, d = self.simulator.v_phi, self.simulator.d_phi
-        form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) + self.dummy_new*v + self.phi_new*d)*dx
+        form += (
+            inner(nabla_grad(self.phi_new), nabla_grad(v)) +
+            self.dummy_new*v +
+            self.phi_new*d
+            )*dx
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) + self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+        form += (
+            inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
+            self.phi_ps_new*d +
+            v*self.dummy_ps_new
+            )*dx
 
         return form

@@ -1,1 +1,1 @@
-from newton import *
+from .newton import Newton_manual
