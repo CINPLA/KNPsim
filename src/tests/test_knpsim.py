@@ -1,10 +1,14 @@
 import pytest
 from dolfin import *
-import knpsim
+from knpsim import *
 
-def test_constant_solution():
-    from knpsim import *
-    from dolfin import *
+
+def test_nofield_constant_solution():
+    """
+    Tests if an ion species with a constant initial concentration with no field
+    will remain constant.
+    """
+    EPS = 1e-14
     import time
 
     x0 = 0
@@ -18,9 +22,7 @@ def test_constant_solution():
     def boundary(x, on_boundary):
         return on_boundary
 
-    lambda_o = 1.6  # ECS tortuousity, Chen & Nicholson 2000;
-
-    init_cond_X = Expression('(140 + 10*(x[0]>=xmid))', degree=4, xmid=xmid)
+    init_cond_X = Expression('100', degree=4, xmid=xmid)
 
     D_X = 1
     z_X = 0
@@ -34,5 +36,12 @@ def test_constant_solution():
     potential = ZeroPotential(simulator)
     simulator.initialize_simulator()
 
+    c = simulator.u.sub(0)
+    start_c = project(c, geometry.V)
+
     for i in range(4):
         time_solver.solve_for_time_step()
+        c = project(simulator.u.sub(0), geometry.V)
+        err = project(c-start_c, geometry.V)
+        err_norm = norm(err)
+        assert abs(err_norm) < EPS
