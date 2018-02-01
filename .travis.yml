@@ -22,6 +22,7 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n knpsim -c conda-forge fenics h5py python=$TRAVIS_PYTHON_VERSION
   - source activate knpsim
+  - cd src
   - python setup.py install
 
 script:
