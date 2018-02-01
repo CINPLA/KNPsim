@@ -108,7 +108,14 @@ class ZeroPotential(Potential):
         Potential.__init__(self, system)
 
     def set_form(self, form):
+        # first set rho (not used in calculations for this potential)
+        F = Constant(self.simulator.F)
+        rho = Function(self.simulator.geometry.V)
+        for ion in self.simulator.ion_list:
+            rho += F*ion.z*ion.c_new
+        self.rho = rho
 
+        # set equations so that phi_diff and phi_vc are 0 everywhere
         v, d = self.simulator.v_phi, self.simulator.d_phi
         form += (
             inner(nabla_grad(self.phi_new), nabla_grad(v)) +

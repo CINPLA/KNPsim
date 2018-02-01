@@ -10,6 +10,7 @@ class Geometry:
         self.meshtype = mesh
         self.space = space
         self.order = order
+        self.element_type_list = [interval, triangle, tetrahedron]
         if isinstance(mesh, list):
             domain_type = [UnitIntervalMesh, UnitSquareMesh, UnitCubeMesh]
             self.dim = len(mesh)
@@ -38,5 +39,7 @@ class Geometry:
             print("input not understood! Exiting...")
             sys.exit(1)
 
+        self.P1 = FiniteElement('P', self.element_type_list[self.dim-1], 1)
+        self.R0 = FiniteElement('R', self.element_type_list[self.dim-1], 0)
         self.V = FunctionSpace(mesh, space, order)
         self.R = FunctionSpace(mesh, "R", 0)

@@ -49,14 +49,18 @@ class Simulator:
         assert(self.time_solver is not None)
         assert(self.potential is not None)
         self.bcs = []
-        # Function spaces for concentrations:
-        function_space_list = [self.geometry.V]*(self.N)
-        # Function spaces for potential:
-        function_space_list.extend([self.geometry.V, self.geometry.V])
-        # Function spaces for potential point sources:
-        function_space_list.extend([self.geometry.R, self.geometry.R])
 
-        self.geometry.W = MixedFunctionSpace(function_space_list)
+        # create mixed element
+        element_list = []
+        for i in range(self.N+2):
+            element_list.append(self.geometry.P1)
+
+        for i in range(2):
+            element_list.append(self.geometry.R0)
+
+        TH = MixedElement(element_list)
+        self.geometry.W = FunctionSpace(self.geometry.mesh, TH)
+
         self.u = Function(self.geometry.W)
         self.u_new = Function(self.geometry.W)
         self.u_res = Function(self.geometry.W)

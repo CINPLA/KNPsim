@@ -1,0 +1,49 @@
+package:
+  name: exdir
+  version: {{ environ.get("GIT_TAG", "0.0.0_custom")|replace("v", "")|replace("-", "_") }}
+
+source:
+  git_url: ..
+
+build:
+  # noarch: python  # TODO Add back noarch when it works properly on Windows,
+                    # we are converting packages manually now
+  script:
+    # TODO remove this and add back quantities as conda package once its updated with the new numpy API
+    # - pip install git+https://github.com/python-quantities/python-quantities.git
+    - python setup.py install
+    # - coverage run --source exdir -m py.test -s --doctest-glob='*.rst'
+    # - coverage report
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - setuptools
+    - pip
+    - numpy
+    - scipy
+    - pyyaml
+    - fenics
+    - h5py
+
+test:
+  requires:
+    - pytest
+    - pytest-benchmark
+    - h5py
+    - six
+  source_files:
+    - tests
+  imports:
+    - exdir
+  commands:
+    - python -c "import knpsim;"
+    - pytest -s
+
+about:
+  home: https://github.com/CINPLA/KNPsim/
+  license: MIT
+  license_file: LICENSE

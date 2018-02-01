@@ -4,6 +4,10 @@ from dolfin import *
 
 
 class Ion:
+    """
+    This class keeps track of mesh and the function space of the electro
+    diffusion solver.
+    """
     def __init__(
             self,
             simulator,
