@@ -1,5 +1,5 @@
 from dolfin import *
-from potential import KirchoffPotential, PoissonPotential
+from .potential import KirchoffPotential
 import sys
 import time
 
