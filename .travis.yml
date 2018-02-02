@@ -24,6 +24,7 @@ install:
       MINICONDA_VERSION="Miniconda2-latest"
     else
       MINICONDA_VERSION="Miniconda3-latest"
+    fi
   - if [[ "$$TRAVIS_OS_NAME" == "osx" ]]; then
       MINICONDA_PLATFORM="MacOSX-x86_64.sh"
       curl $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
