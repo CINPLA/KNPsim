@@ -1,15 +1,41 @@
 language: python
+
+notifications:
+  email:
+    recipients:
+      - a.v.solbra@mn.uio.no 
+    on_success: never   # default: change
+    on_failure: always  # default: always
+
+os:
+  - linux
+  - osx
+
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
   - "3.6"
+  - "nightly"
+
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
+  - MINICONDA_URL="https://repo.continuum.io/miniconda/"
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+      MINICONDA_VERSION="Miniconda2-latest"
     else
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+      MINICONDA_VERSION="Miniconda3-latest"
+  - if [[ "$$TRAVIS_OS_NAME" == "osx" ]]; then
+      MINICONDA_PLATFORM="MacOSX-x86_64.sh"
+      curl $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+    else
+      MINICONDA_PLATFORM="Linux-x86_64.sh"
+      wget $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
     fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -23,7 +49,6 @@ install:
   - conda create -q -n knpsim -c conda-forge fenics h5py matplotlib pytest python=$TRAVIS_PYTHON_VERSION
   - source activate knpsim
   - cd src/
-  - ls
   - python setup.py install
 
 script:
