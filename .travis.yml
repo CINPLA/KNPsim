@@ -20,7 +20,7 @@ install:
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - MINICONDA_URL="https://repo.continuum.io/miniconda/"
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+  - if [ "$TRAVIS_PYTHON_VERSION" == "2.7" ]; then
       MINICONDA_VERSION="Miniconda2-latest"
     else
       MINICONDA_VERSION="Miniconda3-latest"
