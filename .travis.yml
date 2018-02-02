@@ -9,7 +9,7 @@ notifications:
 
 os:
   - linux
-  - osx
+  # - osx
 
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
