@@ -5,8 +5,6 @@ from dolfin import *
 import time
 # parameters['form_compiler']['optimize'] = True
 
-
-
 p0 = Point(0,0)
 p1 = Point(400e-6,400e-6)
 mesh = RectangleMesh(p0, p1, 200, 200)
@@ -19,7 +17,6 @@ def boundary(x, on_boundary):
     return on_boundary
 
 lambda_o = 1.6 # ECS tortuousity, Chen & Nicholson 2000;
-
 
 init_cond_Na = Expression('150', degree=4)
 z_Na = 1
@@ -44,8 +41,10 @@ c_boundary_K = init_cond_K
 # f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
+
 def mag_func(t):
     return 1.0*(t<1e-1)*1e-5
+
 
 def neg_mag_func(t):
     return -mag_func(t)
@@ -64,25 +63,21 @@ currents = [current_2]
 delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
-
-
 dt = 1e-4
 time_solver = Time_solver(simulator, dt, theta=1, t_stop=1)
 potential = KirchoffPotential(simulator)
 
-print "initializing"
+print("initializing")
 
 simulator.initialize_simulator()
 
-print "initialized!"
+print("initialized!")
 
 conductance = Function(simulator.geometry.V)
 for ion in simulator.ion_list:
     conductance += ion.D*ion.z*ion.z*ion.c
 
 conductance = conductance/simulator.psi
-
-
 
 W = MixedFunctionSpace([simulator.geometry.V, simulator.geometry.R])
 
@@ -108,12 +103,12 @@ solve(A, u.vector(), b)
 
 u_phi = project(u.sub(0),simulator.geometry.V)
 
+# FIXME: Remove and set relative to this file
 fname = "/media/andreavs/datadrive/knp_sims_SI/point_source_all_modes/vc_short_strong.h5"
 notes = "This simulation considers a point source in a 2d grid, with vc"
 state_saver = State_saver(fname,simulator, notes)
 
 assign(simulator.u.sub(simulator.N), u_phi)
-
 
 time_solver.t = 0
 t_stop = 1e-1
@@ -132,7 +127,6 @@ while time_solver.t < t_stop:
     state_saver.save_state()
     time_solver.t += dt
     time_solver.t_list.append(time_solver.t)
-
 
 state_saver.finalize()
 # plot(u_phi)

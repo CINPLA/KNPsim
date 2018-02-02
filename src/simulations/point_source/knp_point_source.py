@@ -1,9 +1,8 @@
 import sys
 import os
-dirname, filename = os.path.split(os.path.abspath(__file__))
-rel_path = "/../../"
-print dirname+rel_path
-sys.path.append(dirname+rel_path)
+dirname = os.path.dirname(os.path.abspath(__file__))
+print(path.join(dirname, "..", ".."))
+sys.path.append(path.join(dirname, "..", ".."))
 from impKNP import *
 from dolfin import *
 import time
@@ -20,7 +19,6 @@ def boundary(x, on_boundary):
     return on_boundary
 
 lambda_o = 1.6 # ECS tortuousity, Chen & Nicholson 2000;
-
 
 init_cond_Ca = Expression('1.4', degree=4)
 z_Ca = 2
@@ -76,11 +74,11 @@ dt = 2e-3
 time_solver = Time_solver(simulator, dt, t_stop=2e0)
 potential = KirchoffPotential(simulator)
 
-print "initializing"
+print("initializing")
 
 simulator.initialize_simulator()
 
-print "initialized!"
+print("initialized!")
 
 # live_plotter = Live_plotter(simulator)
 

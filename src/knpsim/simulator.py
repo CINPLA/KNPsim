@@ -68,31 +68,21 @@ class Simulator:
 
         for i, ion in enumerate(self.ion_list):
             if ion.boundary is not None:
-                bc = DirichletBC(
-                    self.geometry.W.sub(i),
-                    ion.boundary_condition,
-                    ion.boundary
-                    )
+                bc = DirichletBC(self.geometry.W.sub(i),
+                                 ion.boundary_condition,
+                                 ion.boundary)
                 self.bcs.append(bc)
             ion.c = self.u[i]
-            assign(
-                self.u.sub(i),
-                interpolate(ion.initial_condition, self.geometry.V)
-                )
+            assign(self.u.sub(i),
+                   interpolate(ion.initial_condition, self.geometry.V))
             ion.c_new = self.u_new[i]
-            assign(
-                self.u_new.sub(i),
-                interpolate(ion.initial_condition, self.geometry.V)
-                )
+            assign(self.u_new.sub(i),
+                   interpolate(ion.initial_condition, self.geometry.V))
             ion.v = self.v_list[i]
 
         if self.potential.bc is not None:
-            self.bcs.append(
-                DirichletBC(
-                    self.geometry.W.sub(self.N),
-                    self.potential.bc, "on_boundary"
-                    )
-                )
+            self.bcs.append(DirichletBC(self.geometry.W.sub(self.N),
+                                        self.potential.bc, "on_boundary"))
 
         [bc.apply(self.u.vector()) for bc in self.bcs]
         [bc.apply(self.u_new.vector()) for bc in self.bcs]
@@ -115,8 +105,8 @@ class Simulator:
 
         self.conductance = 0
         for i, ion in enumerate(self.ion_list):
-            self.conductance = self.conductance + \
-                self.F*ion.D*ion.z**2*ion.c_new/self.psi
+            self.conductance = (self.conductance +
+                                self.F*ion.D*ion.z**2*ion.c_new/self.psi)
         self.set_form()
 
     def set_form(self):
@@ -132,14 +122,9 @@ class Simulator:
             z = Constant(ion.z)
             v = self.v_list[i]
             k = Constant(1/self.time_solver.dt)
-            self.form += (
-                k*(c_new - c)*v +
-                inner(
-                    D*nabla_grad(c_new) + D*c_new*z*nabla_grad(phi_new)/psi,
-                    nabla_grad(v)
-                    ) -
-                f*v
-                )*dx
+            self.form += (k*(c_new - c)*v + inner(D*nabla_grad(c_new) +
+                                                  D*c_new*z*nabla_grad(phi_new)/psi,
+                                                  nabla_grad(v)) - f*v)*dx
 
         self.form = self.potential.set_form(self.form)
         self.w = TrialFunction(self.geometry.W)

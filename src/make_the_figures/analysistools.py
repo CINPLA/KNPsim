@@ -27,6 +27,7 @@ class AnalysisTools:
             index = int(ion_dataset.attrs['index'])
             ion = Ion(ion_name, D, z, index)
             self.ion_list[index] = ion
+
         self.time_series = hdfpy['time'][()] # read whole dataset to numpy array
         space = hdfpy['FunctionSpace'].attrs['space'].decode("utf-8")
         order = int(hdfpy['FunctionSpace'].attrs['order'])
@@ -44,8 +45,10 @@ class AnalysisTools:
 
         # Function spaces for concentrations:
         function_space_list = [self.V]*(self.N)
+
         # Function spaces for potential:
         function_space_list.extend([self.V,self.V])
+
         # Function spaces for potential point sources:
         function_space_list.extend([self.R,self.R])
 
@@ -53,8 +56,6 @@ class AnalysisTools:
 
         self.attributes = self.hdf.attributes('attributes')
         self.vertex_to_dof_map = vertex_to_dof_map(self.V)
-
-
 
     def plot_initial_condition_fenics(self):
         u = Function(self.W)
@@ -77,6 +78,7 @@ class AnalysisTools:
         for ion in self.ion_list:
             plot(u.sub(ion.index), title=str(ion.name)+' concentration at t='+str(time)+' ms')
             rho += project(u.sub(ion.index)*ion.charge)
+
         rho = self.F*rho
         plot(rho, title='Charge concentration [C/L]')
 
@@ -104,6 +106,7 @@ class AnalysisTools:
                 c_array[:] = c_array[self.vertex_to_dof_map]
                 plt.plot(coor,c_array,label=str(ion.name))
                 rho += project(u.sub(ion.index)*ion.charge)
+
             plt.title('Initial ion concentations')
             plt.ylabel('Concentration [mM/L]')
             plt.xlabel('Position [um]')
@@ -154,8 +157,8 @@ class AnalysisTools:
         phi_t = []
         phi = Function(self.V)
         for n in range(from_idx, to_idx):
-            if n%100 == 0:
-                print n
+            if n % 100 == 0:
+                print(n)
             self.hdf.read(u, '/solution/vector_'+str(n))
             phi.assign(project(u.sub(self.N), self.V))
             phi_array = phi.vector().array()
@@ -170,8 +173,8 @@ class AnalysisTools:
         phi_t = []
         phi = Function(self.V)
         for n in range(from_idx, to_idx):
-            if n%100 == 0:
-                print n
+            if n % 100 == 0:
+                print(n)
             self.hdf.read(u, '/solution/vector_'+str(n))
             phi.assign(project(u.sub(self.N), self.V))
             phi_array = phi.vector().array()
@@ -225,6 +228,7 @@ class AnalysisTools:
             plt.title('Charge concentration at t='+str(time)+' ms')
             plt.ylabel('Charge concentration [C/L]')
             plt.xlabel('Position [um]')
+
         elif self.mesh.geometry().dim()==2:
             phi = project(u.sub(self.N), self.V)
             phi_array = phi.vector().array()

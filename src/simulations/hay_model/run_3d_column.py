@@ -1,4 +1,5 @@
 import sys
+# FIXME: Why did this come from?
 sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
 from impKNP import *
 from dolfin import *
@@ -6,7 +7,6 @@ import time
 import scipy.io as sio
 import numpy as np
 # parameters['form_compiler']['optimize'] = True
-
 
 ECSfrac = 0.2 # Fraction of tissue being extracellular space
 
@@ -36,7 +36,6 @@ D_Ca = 0.71e-9/lambda_o**2
 init_Ca = init_cond_Ca
 c_boundary_Ca = init_cond_Ca
 ion_Ca = Ion(simulator, z_Ca, D_Ca, init_Ca, c_boundary_Ca, boundary, "Ca")
-
 
 init_cond_Na = Expression('150', degree=4)
 z_Na = 1
@@ -72,9 +71,6 @@ icap = d['icap']/factor
 x = d['x'].reshape(n_points)
 y = d['y'].reshape(n_points)
 z = d['z'].reshape(n_points)
-
-
-
 
 i_ion = ion_Na.z*ina + ion_K.z*ik + ion_Ca.z*ica + ion_Cl.z*icl
 current_arrays = [ica, ina, icl, ik]
@@ -115,19 +111,15 @@ for i in range(n_points):
 time_solver = Time_solver(simulator, dt, theta=1,t_start=8.1, t_stop=9.9)
 
 # ns = Neuron_source(simulator, 'active.h5')
-
 potential = KirchoffPotential(simulator)
-
 
 simulator.initialize_simulator()
 
 live_plotter = Live_plotter(simulator)
-#
+
 # fname = "/media/andreavs/datadrive/knp_sims_SI/hay_model/knp_3.h5"
 # notes = "This simulation considers Hay model neuron in a cylindrical column, using knp"
 # state_saver = State_saver(fname,simulator, notes)
-
-
 
 time_solver.solve()
 

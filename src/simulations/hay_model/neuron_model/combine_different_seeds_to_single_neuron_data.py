@@ -5,7 +5,6 @@ import os
 
 iseed = int(sys.argv[1])
 
-
 list_ica = [];
 list_ina = [];
 list_ik = [];
@@ -82,19 +81,19 @@ icap = np.concatenate(list_icap, axis=1)
 imemb = np.concatenate(list_imemb, axis=1)
 isyn = np.concatenate(list_isyn, axis=1)
 
-# convert to base SI units:
-times = times*1e-3 # s
-ica = ica*1e-9 # nA
-ina = ina*1e-9 # nA
-ik = ik*1e-9 # nA
-ix = ix*1e-9 # nA
-icap = icap*1e-9 # nA
-imemb = imemb*1e-9 # nA
-isyn = isyn*1e-9 # nA
+# Convert to base SI units:
+times = times*1e-3  # s
+ica = ica*1e-9      # nA
+ina = ina*1e-9      # nA
+ik = ik*1e-9        # nA
+ix = ix*1e-9        # nA
+icap = icap*1e-9    # nA
+imemb = imemb*1e-9  # nA
+isyn = isyn*1e-9    # nA
 
-x = x*1e-6 # meters
-y = y*1e-6 # meters
-z = z*1e-6 # meters
+x = x*1e-6  # meters
+y = y*1e-6  # meters
+z = z*1e-6  # meters
 
 B = {
     'times' : times,

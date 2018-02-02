@@ -11,18 +11,12 @@ class State_saver:
         simulator.state_saver = self
         self.hdf = HDF5File(simulator.geometry.mesh.mpi_comm(), filename, 'w')
         self.hdf.write(simulator.geometry.mesh, "geometry/mesh")
-        self.hdf.write(
-            Function(simulator.geometry.W),
-            "geometry/MixedFunctionSpace"
-            )
-        self.hdf.write(
-            Function(simulator.geometry.V),
-            "geometry/FunctionSpace"
-            )
-        self.hdf.write(
-            vertex_to_dof_map(simulator.geometry.V).astype(float),
-            'vertex_to_dof_map'
-            )
+        self.hdf.write(Function(simulator.geometry.W),
+                       "geometry/MixedFunctionSpace")
+        self.hdf.write(Function(simulator.geometry.V),
+                      "geometry/FunctionSpace")
+        self.hdf.write(vertex_to_dof_map(simulator.geometry.V).astype(float),
+                       'vertex_to_dof_map')
 
         attribute_holder = Function(simulator.geometry.V)
         attribute_holder = self.hdf.write(attribute_holder, 'attributes')
@@ -51,10 +45,8 @@ class State_saver:
         """
         self.index += 1
         if self.index == self.save_step:
-            self.hdf.write(
-                self.simulator.u, "/solution",
-                self.simulator.time_solver.t
-                )
+            self.hdf.write(self.simulator.u, "/solution",
+                           self.simulator.time_solver.t)
             self.save_times.append(self.simulator.time_solver.t)
             self.index = 0
 
@@ -71,17 +63,13 @@ class State_saver:
             grp = f.create_group("FunctionSpace")
             grp.attrs['space'] = self.simulator.geometry.space
             grp.attrs['order'] = self.simulator.geometry.order
-            dset_time = f.create_dataset(
-                "time",
-                (np.size(self.simulator.time_solver.t_list),),
-                dtype='f'
-                )
+            dset_time = f.create_dataset("time",
+                                         (np.size(self.simulator.time_solver.t_list), ),
+                                         dtype='f')
             dset_time[...] = np.array(self.simulator.time_solver.t_list)
-            dset_time = f.create_dataset(
-                "save_time",
-                (np.size(self.save_times),),
-                dtype='f'
-                )
+            dset_time = f.create_dataset("save_time",
+                                         (np.size(self.save_times), ),
+                                         dtype='f')
             dset_time[...] = np.array(self.save_times)
 
             grp_ions = f.create_group("ions")

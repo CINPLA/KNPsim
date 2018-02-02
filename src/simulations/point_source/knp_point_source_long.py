@@ -1,9 +1,9 @@
 import sys
 import os
-dirname, filename = os.path.split(os.path.abspath(__file__))
-rel_path = "/../../"
-print dirname+rel_path
-sys.path.append(dirname+rel_path)
+# FIXME: Why is this here?
+dirname = os.path.dirname(os.path.abspath(__file__))
+print(dirname, "..", "..")
+sys.path.append(path.join(dirname, "..", ".."))
 from impKNP import *
 from dolfin import *
 import time
@@ -53,9 +53,9 @@ c_boundary_K = init_cond_K
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 
-
 def mag_func(t):
     return 1.0*(t<1e0)*1e-9
+
 
 def neg_mag_func(t):
     return -mag_func(t)
@@ -78,15 +78,15 @@ dt = 1e-2
 time_solver = Time_solver(simulator, dt, t_stop=2e0)
 potential = KirchoffPotential(simulator)
 
-print "initializing"
+print("initializing")
 
 simulator.initialize_simulator()
 
-print "initialized!"
+print("initialized!")
 
 # live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp_long_with_ca.h5"
+fname = path.join(dirname, "knp_long_with_ca.h5")
 notes = "This simulation considers a point source in a 3d grid, with knp"
 state_saver = State_saver(fname,simulator, notes)
 

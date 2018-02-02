@@ -3,6 +3,9 @@ from mshr import *
 import scipy.io
 import numpy as np
 
+# TODO: Wrapp in function of and add some comments
+# TODO: Store 'revdata_100fold.mat' in folk.uio.no/aslakwb or similar, and then
+#       download
 data = scipy.io.loadmat('revdata_100fold.mat')
 
 print data.keys()

@@ -26,8 +26,8 @@ icap = []
 times = []
 
 for isim in range(Nsims):
-    print 'isim=', isim
-    print 'Loading isim= ', isim, ', myseed=', myseed
+    print('isim=', isim)
+    print('Loading isim= ', isim, ', myseed=', myseed)
     A = scipy.io.loadmat('simulation_data/seed_' + str(myseed) + '/currsums_parts_'+str(Nsynlocs)+'areagsynsmediumtau_fixeddt_type'+str(synloctype)+'_amp'+str(syngmax)+'_tstop'+str(tstop)+'_nseg'+str(nsegs)+'_dt'+str(dt)+'_seed'+str(myseed)+'_sim'+str(isim)+'x'+str(singleSimT)+'.mat')
 
     print A.keys()
@@ -50,7 +50,6 @@ for isim in range(Nsims):
         z = A['z']
         area = A['A']
 
-
 times = np.concatenate(times, axis=1)
 times = times.reshape(np.size(times))
 
@@ -64,15 +63,15 @@ imemb = np.concatenate(imemb, axis=1)
 icap = np.concatenate(icap, axis=1)
 Vsoma = np.concatenate(Vsoma, axis=1)
 
-print ina.shape
-print ik.shape
-print ica.shape
-print ih.shape
-print il.shape
-print VtimesA.shape
-print imemb.shape
-print icap.shape
-print Vsoma.shape
+print(ina.shape)
+print(ik.shap)
+print(ica.shape)
+print(ih.shape)
+print(il.shape)
+print(VtimesA.shape)
+print(imemb.shape)
+print(icap.shape)
+print(Vsoma.shape)
 
 B = {
     'times' : times,

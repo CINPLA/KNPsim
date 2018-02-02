@@ -15,15 +15,11 @@ analysistools = AnalysisTools('knp_3.h5')
 cell_morphology = scipy.io.loadmat('cell_morphology.mat')
 data = scipy.io.loadmat('revdata_100fold.mat')
 
-
-
 xstart = cell_morphology['xstart'][0] + (57.28 + 34.16)/2
 xend = cell_morphology['xend'][0] + (57.28 + 34.16)/2
 ystart = cell_morphology['ystart'][0] + (17.62 + 19.07)/2
 yend = cell_morphology['yend'][0] + (17.62 + 19.07)/2
 N = cell_morphology['N'][0][0]
-
-
 
 plt.figure()
 [plt.plot([xstart[idx], xend[idx]], [ystart[idx], yend[idx]], c='k', linewidth=0.4) for idx in range(N)]
@@ -31,8 +27,6 @@ plt.title("Neuron morphology")
 plt.axis("image")
 plt.xlabel("x position (um)")
 plt.ylabel("y position (um)")
-
-
 
 plt.figure()
 [plt.plot([xstart[idx], xend[idx]], [ystart[idx], yend[idx]], c='k', linewidth=0.4) for idx in range(N)]
@@ -60,10 +54,7 @@ ax2.axis("image")
 ax2.set_xlabel("x position (um)")
 ax2.set_ylabel("y position (um)")
 
-
 plt.show()
-
-
 
 # Set up arrays
 xmin = analysistools.mesh.coordinates()[:,0].min()
@@ -85,11 +76,9 @@ x_array = np.linspace(xmin + padding*xlen, xmax - padding*xlen, N_array)
 y_array = np.linspace(ymin + padding*ylen, ymax - padding*ylen, N_array)
 X,Y = np.meshgrid (x_array,y_array)
 
-
 # convert to um
 X = X*1e6
 Y = Y*1e6
-
 
 # make K plot
 t_idx = 700

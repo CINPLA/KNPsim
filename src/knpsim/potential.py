@@ -1,5 +1,5 @@
 import sys
-from dolfin import *
+from dolfin import Function, Constant, interpolate, inner, nabla_grad, dx
 
 
 class Potential:
@@ -43,18 +43,14 @@ class KirchoffPotential(Potential):
             b += ion.z*ion.D*ion.c_new
             f += ion.z*ion.f
 
-        form += Constant(F)*(inner(
-                sigma*nabla_grad(self.phi_new) + nabla_grad(b), nabla_grad(v)
-            ) +
-            self.phi_new*d + v*self.dummy_new - f*v)*dx
+        form += Constant(F)*(inner(sigma*nabla_grad(self.phi_new) +
+                                   nabla_grad(b), nabla_grad(v)) +
+                             self.phi_new*d + v*self.dummy_new - f*v)*dx
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += F*(
-            inner(
-                sigma*nabla_grad(self.phi_ps_new), nabla_grad(v)
-            ) +
-            self.phi_ps_new*d + v*self.dummy_ps_new
-        )*dx
+        form += F*(inner(sigma*nabla_grad(self.phi_ps_new), nabla_grad(v)) +
+                   self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+
         return form
 
 
@@ -74,10 +70,8 @@ class PoissonPotential(Potential):
             sigma += (1./psi)*ion.z**2*ion.D*ion.c
             b += ion.z*ion.D*ion.c
 
-        g = inner(
-            nabla_grad(b)/sigma,
-            FacetNormal(self.simulator.geometry.mesh)
-            )
+        g = inner(nabla_grad(b)/sigma,
+                  FacetNormal(self.simulator.geometry.mesh))
         F = Constant(self.simulator.F)
         eps = Constant(self.simulator.epsilon)
 
@@ -86,17 +80,14 @@ class PoissonPotential(Potential):
             rho += F*ion.z*ion.c_new
 
         self.rho = rho
-        form += (
-            inner(nabla_grad(self.phi_new), nabla_grad(v)) +
-            self.dummy_new*v + self.phi_new*d - rho*v/eps
-            )*dx
+        form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) +
+                 self.dummy_new*v + self.phi_new*d - rho*v/eps)*dx
         form += g*v*ds
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += (
-            inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
-            self.phi_ps_new*d + v*self.dummy_ps_new
-            )*dx
+        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
+                 self.phi_ps_new*d + v*self.dummy_ps_new)*dx
+
         return form
 
 
@@ -117,17 +108,11 @@ class ZeroPotential(Potential):
 
         # set equations so that phi_diff and phi_vc are 0 everywhere
         v, d = self.simulator.v_phi, self.simulator.d_phi
-        form += (
-            inner(nabla_grad(self.phi_new), nabla_grad(v)) +
-            self.dummy_new*v +
-            self.phi_new*d
-            )*dx
+        form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) +
+                 self.dummy_new*v + self.phi_new*d)*dx
 
         v, d = self.simulator.v_phi_ps, self.simulator.d_phi_ps
-        form += (
-            inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
-            self.phi_ps_new*d +
-            v*self.dummy_ps_new
-            )*dx
+        form += (inner(nabla_grad(self.phi_ps_new), nabla_grad(v)) +
+                 self.phi_ps_new*d + v*self.dummy_ps_new)*dx
 
         return form

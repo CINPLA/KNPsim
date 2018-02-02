@@ -9,9 +9,10 @@ cell_parameters = {
 
 cell = LFPy.Cell(**cell_parameters)
 
-
 plt.figure()
-[plt.plot([cell.xstart[idx], cell.xend[idx]], [cell.ystart[idx], cell.yend[idx]], c='k') for idx in xrange(cell.totnsegs)]
+for idx in range(cell.totnsegs):
+    plt.plot([cell.xstart[idx], cell.xend[idx]],
+             [cell.ystart[idx], cell.yend[idx]], c='k')
 plt.show()
 
 # xstart = cell.xstart

@@ -83,8 +83,6 @@ forsec L5PC.all {
 dt = """+str(dt)+"""
 """)
 
-
-
 apical_nsec = 109
 basal_nsec = 84
 somatic_nsec = 1
@@ -114,12 +112,16 @@ for i in range(somatic_nsec):
     h("tmpvary2 = y3d(n3d()-1)")
     print h.tmpvarx, h.tmpvarx2, h.tmpvary, h.tmpvary2
 
-[plt.plot([xxstart[idx], xxend[idx]], [yystart[idx], yyend[idx]], c='k', linewidth=0.4) for idx in range(len(xxstart))]
-
-
+for idx in range(len(xxstart)):
+    plt.plot([xxstart[idx], xxend[idx]],
+             [yystart[idx], yyend[idx]],
+             c='k', linewidth=0.4)
 
 offsetx = (57.28 + 34.16)/2
 offsety = (17.62 + 19.07)/2
-#
-[plt.plot([cell.xstart[idx]+offsetx, cell.xend[idx]+offsetx], [cell.ystart[idx]+offsety, cell.yend[idx]+offsety], linewidth=0.4, c='b') for idx in xrange(cell.totnsegs)]
+
+for ids for range(call.totnsegs):
+plt.plot([cell.xstart[idx] + offsetx, cell.xend[idx] + offsetx],
+         [cell.ystart[idx] + offsety, cell.yend[idx] + offsety],
+         linewidth=0.4, c='b')
 plt.show()
