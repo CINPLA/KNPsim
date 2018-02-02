@@ -13,8 +13,7 @@ os:
 
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "3"
-  - "nightly"
+  - "3.6"
 
 install:
   - sudo apt-get update
