@@ -19,28 +19,27 @@ install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
-  - MINICONDA_URL="https://repo.continuum.io/miniconda/"
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      MINICONDA_VERSION="Miniconda2-latest"
-    else
-      MINICONDA_VERSION="Miniconda3-latest"
-    fi
-  - if [[ "$$TRAVIS_OS_NAME" == "osx" ]]; then
-      MINICONDA_PLATFORM="MacOSX-x86_64.sh"
-      curl $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
-    else
-      MINICONDA_PLATFORM="Linux-x86_64.sh"
-      wget $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
-    fi
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
+  # - MINICONDA_URL="https://repo.continuum.io/miniconda/"
+  # - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+  #     MINICONDA_VERSION="Miniconda2-latest"
+  #   else
+  #     MINICONDA_VERSION="Miniconda3-latest"
+  #   fi
+  # - if [[ "$$TRAVIS_OS_NAME" == "osx" ]]; then
+  #     MINICONDA_PLATFORM="MacOSX-x86_64.sh"
+  #     curl $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+  #   else
+  #     MINICONDA_PLATFORM="Linux-x86_64.sh"
+  #     wget $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+  #   fi
+  # - bash miniconda.sh -b -p $HOME/miniconda
+  # - export PATH="$HOME/miniconda/bin:$PATH"
+  # - hash -r
+  # - conda config --set always_yes yes --set changeps1 no
+  # - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
 
-  # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n knpsim -c conda-forge fenics h5py matplotlib pytest python=$TRAVIS_PYTHON_VERSION
   - source activate knpsim
   - cd src/
