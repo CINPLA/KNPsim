@@ -15,6 +15,8 @@ python:
   # We don't actually use the Travis Python, but this keeps it organized.
   - "3.6"
 
+https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64
+https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -22,13 +24,13 @@ install:
   - MINICONDA_URL="https://repo.continuum.io/miniconda/"
   - MINICONDA_VERSION="Miniconda3-latest"
   - MINICONDA_PLATFORM="Linux-x86_64"
-  - wget $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+  - wget $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM.sh -O miniconda.sh;
   # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   #     MINICONDA_PLATFORM="MacOSX-x86_64.sh"
-  #     curl $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+  #     curl $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
   #   else
   #     MINICONDA_PLATFORM="Linux-x86_64.sh"
-  #     wget $MINICONDA_URL/$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
+  #     wget $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
   #   fi
   # - bash miniconda.sh -b -p $HOME/miniconda
   # - export PATH="$HOME/miniconda/bin:$PATH"
