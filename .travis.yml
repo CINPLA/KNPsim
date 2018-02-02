@@ -3,7 +3,7 @@ language: python
 notifications:
   email:
     recipients:
-      - a.v.solbra@mn.uio.no 
+      - a.v.solbra@mn.uio.no
     on_success: never   # default: change
     on_failure: always  # default: always
 
@@ -13,12 +13,7 @@ os:
 
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "2.6"
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+  - "3"
   - "nightly"
 
 install:
