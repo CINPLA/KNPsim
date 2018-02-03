@@ -24,7 +24,8 @@ install:
   - MINICONDA_VERSION="Miniconda3-latest"
   # - MINICONDA_PLATFORM="Linux-x86_64"
   # - wget $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM.sh -O miniconda.sh;
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       MINICONDA_PLATFORM=MacOSX-x86_64.sh
       curl $MINICONDA_URL$MINICONDA_VERSION-$MINICONDA_PLATFORM -O miniconda.sh;
     else
