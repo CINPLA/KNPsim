@@ -2,6 +2,7 @@ import pytest
 from dolfin import *
 from knpsim import *
 
+#TODO: test Time_solver.set_time_step_size(dt)
 
 def test_nofield_constant_solution():
     """

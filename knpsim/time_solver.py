@@ -8,6 +8,20 @@ import numpy as np
 
 
 class Time_solver:
+    """
+    This class holds the parameters for the backward euler time solver used in
+    the electrodiffusion simulations, as well as the methods for stepping in
+    time.
+
+    Args:
+        simulator (Simulator): The simulator instance used in the simulation.
+        dt (float): the time step.
+        t_start (float, optional): The starting time for the simulator.
+        t_stop (float, optional): The ending time for the simulator.
+        atol (float, optional): Passed to the newton solver. Absolute tolerance.
+        rtol (float, optional): Passed to the Newton solver. Relative tolerance.
+        max_iter (int, optional): Padded to the Newton solver. Max iterations.
+    """
     def __init__(self, simulator, dt, t_start=0., t_stop=1.0, atol=1e-9,
                  rtol=1e-6, max_iter=10):
         self.simulator = simulator
@@ -22,9 +36,19 @@ class Time_solver:
         self.max_iter = max_iter
 
     def set_time_step_size(self, dt):
+        """
+        This function updates the time step used in the time solver.
+
+        Args:
+            dt (float): The new time step.
+        """
         self.dt = dt
 
     def solve_for_time_step(self):
+        """
+        This function solves for a single time step. At the end, State_saver
+        and Live_plotter is called, provided that they have been initialized.
+        """
         t_new = self.t + self.dt
         self.t_list.append(t_new)
 
@@ -70,6 +94,11 @@ class Time_solver:
             self.simulator.state_saver.save_state()
 
     def solve(self):
+        """
+        This function solves untill t >= t_stop, by repeatedly calling
+        solve_for_time_step(). Afterwards, state_saver.finalize() is called,
+        provided that state_saver has been initialized.
+        """
         while self.t < self.t_stop:
             sim_t0 = time.clock()
             self.solve_for_time_step()

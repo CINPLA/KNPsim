@@ -65,7 +65,7 @@ class State_saver:
         """
         This function should be called at the end of a simulation where
         ´State_saver´ has been used. It stores metadata such as the simulation
-        duration. It is called automatically by `Time_solver.solve()`
+        duration. It is called automatically by `Time_solver.solve()`.
         """
         self.simtime_end = time.time()
         simtime = self.simtime_end - self.simtime_start
