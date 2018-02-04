@@ -13,7 +13,8 @@ class DuplicationError(Error):
 
 class Simulator:
     """
-    This class serves as a foundation for running a simulation. It keeps track
+    This class serves as a foundation for running a simulation. It should be
+    the second class initialized by the user (after Geometry). It keeps track
     of all the other parts (Geometry, Time_solver, Potential, Ions, etc), as
     well as physical constants etc.
     The method initialize_simulator() is called when all these things are in

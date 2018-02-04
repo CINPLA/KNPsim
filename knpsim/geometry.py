@@ -4,8 +4,10 @@ from dolfin import *
 # TODO: Add an explenation of the different types the mesh can be
 class Geometry:
     """
-    This class keeps track of mesh and the function space of the electro
-    diffusion solver.
+    This class keeps track of mesh and the function space of the electro-
+    diffusion solver. It should be the first class initialized by the user.
+
+    G
     """
     def __init__(self, mesh, space='CG', order=1):
         self.meshtype = mesh
