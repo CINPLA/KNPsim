@@ -1,7 +1,4 @@
-import sys
-# FIXME: Why did this come from?
-sys.path.append("/home/andreavs/Dropbox/knpsim_backward_euler_plain_SI")
-from impKNP import *
+from impknp imort *
 from dolfin import *
 import time
 import scipy.io as sio
