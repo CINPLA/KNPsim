@@ -3,9 +3,33 @@ from dolfin import *
 from .ion import Ion
 from .time_solver import Time_solver
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class DuplicationError(Error):
+    """Duplication error"""
+    pass
 
 class Simulator:
-    def __init__(self, geometry, T=300.):
+    """
+    This class serves as a foundation for running a simulation. It keeps track
+    of all the other parts (Geometry, Time_solver, Potential, Ions, etc), as
+    well as physical constants etc.
+    The method initialize_simulator() is called when all these things are in
+    place to set up the variational form and prepare for the call(s) to
+    time_solver.solve_for_time_step().
+
+    Args:
+        geometry (Geometry): The geometry instance that holds the mesh for
+            the simulation.
+        temperature (float, optional): The temperature of the system.
+
+    Note:
+        All physical constants (appart from temperature) are hard-coded in the
+        initializer.
+    """
+    def __init__(self, geometry, temperature=300.):
         self.ion_list = []
         self.dt = Expression("dt", dt=0, degree=2)
         self.geometry = geometry
@@ -13,44 +37,81 @@ class Simulator:
         self.potential = None
         self.state_saver = None
         self.live_plotter = None
-        self.T = T                              # temperature, K
+        self.T = temperature                    # temperature, K
         self.R = 8.314                          # gas constant, J/(K*mol)
         self.F = 9.648e4                        # Faradays constant, C/mol
         self.eps_0 = 8.854187e-12               # vacuum permittivity, F/m
         self.psi = self.R*self.T/self.F
         self.eps_r = 80
         self.epsilon = self.eps_0*self.eps_r
-        self.deltas = []
+        self.deltas = [] # deltas are added later by making a Delta object
         self.N = 0  # number of ion species currently in the simulator
 
     def add_ion(self, ion):
+        """
+        This function adds an ion to the simulator instance. It is called by
+        the constructor in Ion, and should never be called by the user in
+        normal use.
+
+        Args:
+            ion (Ion): The Ion instance.
+        """
         assert(isinstance(ion, Ion))
         self.ion_list.append(ion)
         ion.index = self.N
         self.N += 1
 
     def set_time_solver(self, time_solver):
+        """
+        This function sets the time solver for the system. Will raise an error
+        if a time solver already exists. This function is called by the
+        constructor in Time_solver, and should never be called by the user.
+
+        Args:
+            time_solver (Time_solver): The Time_solver instance.
+        """
         assert(isinstance(time_solver, Time_solver))
         if self.time_solver is not None:
-            print("Can only set one time solver for system! Exiting...")
-            sys.exit(1)
+            raise DuplicationError("Can only set one time solver for the \
+                system!")
         else:
             self.time_solver = time_solver
 
     def set_potential(self, potential):
+        """
+        This function sets the potential type for the system. Will raise an
+        error if a time solver already exists. This function is called by the
+        constructor in Potential, and should never be called by the user.
+
+        Args:
+            time_solver (Time_solver): The Time_solver instance.
+        """
         assert(isinstance(potential, Potential))
         if self.potential is not None:
-            print("Can only set one time solver for system! Exiting...")
-            sys.exit(1)
+            raise DuplicationError("Can only set one potential for the system!")
         else:
             self.potential = potential
 
+    def add_point_source(self, delta):
+        """
+        This function adds a point source to the system.
+
+        Args:
+            delta (Delta): the point source.
+        """
+        self.deltas.append(delta)
+
     def initialize_simulator(self):
+        """
+        This function initialized the simulator, and should be called by the
+        user when the Time_solver, Potential and all Ions and Deltas have been
+        set.
+        """
         assert(self.time_solver is not None)
         assert(self.potential is not None)
         self.bcs = []
 
-        # create mixed element
+        # Create mixed element
         element_list = []
         for i in range(self.N+2):
             element_list.append(self.geometry.P1)
@@ -61,11 +122,13 @@ class Simulator:
         TH = MixedElement(element_list)
         self.geometry.W = FunctionSpace(self.geometry.mesh, TH)
 
+        # Set up functions, testfunctions
         self.u = Function(self.geometry.W)
         self.u_new = Function(self.geometry.W)
         self.u_res = Function(self.geometry.W)
         self.v_list = TestFunctions(self.geometry.W)
 
+        # Initialize all the ion functions with boundary cond and init cond.
         for i, ion in enumerate(self.ion_list):
             if ion.boundary is not None:
                 bc = DirichletBC(self.geometry.W.sub(i),
@@ -80,7 +143,9 @@ class Simulator:
                    interpolate(ion.initial_condition, self.geometry.V))
             ion.v = self.v_list[i]
 
+        # This should never happen:
         if self.potential.bc is not None:
+            print("Why are you setting a dirichlet BC for the potential??")
             self.bcs.append(DirichletBC(self.geometry.W.sub(self.N),
                                         self.potential.bc, "on_boundary"))
 
@@ -88,6 +153,7 @@ class Simulator:
         [bc.apply(self.u_new.vector()) for bc in self.bcs]
         n = len(self.ion_list)
 
+        # declare some variables related to the potential:
         self.potential.phi = self.u[n]
         self.potential.phi_new = self.u_new[n]
 
@@ -103,16 +169,19 @@ class Simulator:
         self.v_phi, self.d_phi = self.v_list[n], self.v_list[n+2]
         self.v_phi_ps, self.d_phi_ps = self.v_list[n+1], self.v_list[n+3]
 
+        # define conductance
         self.conductance = 0
         for i, ion in enumerate(self.ion_list):
             self.conductance = (self.conductance +
                                 self.F*ion.D*ion.z**2*ion.c_new/self.psi)
+
+        # set up variational form:
         self.set_form()
 
     def set_form(self):
         """
-        This function is called by initialize_simulator in order to set up the
-        variational form.
+        This function is called by initialize_simulator() in order to set up
+        the variational form. Should never be called by the user.
         """
         self.form = 0
         psi, dt = Constant(self.psi), Constant(self.time_solver.dt)
@@ -130,6 +199,3 @@ class Simulator:
         self.w = TrialFunction(self.geometry.W)
         self.Jac = derivative(self.form, self.u_new, self.w)
         self.A = assemble(self.Jac)
-
-    def add_point_source(self, delta):
-        self.deltas.append(delta)
