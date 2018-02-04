@@ -1,10 +1,4 @@
-import sys
-import os
-# FIXME: Why is this here?
-dirname = os.path.dirname(os.path.abspath(__file__))
-print(dirname, "..", "..")
-sys.path.append(path.join(dirname, "..", ".."))
-from impKNP import *
+from knpsim import *
 from dolfin import *
 import time
 
