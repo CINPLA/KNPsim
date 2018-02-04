@@ -52,7 +52,7 @@ class State_saver:
     def save_state(self):
         """
         This function saves the potential and the concentrations at the current
-        time step. It is called automatically be ´Time_solver.solve()´.
+        time step. It is called automatically be Time_solver.solve().
         """
         self.index += 1
         if self.index == self.save_step:
@@ -64,8 +64,8 @@ class State_saver:
     def finalize(self):
         """
         This function should be called at the end of a simulation where
-        ´State_saver´ has been used. It stores metadata such as the simulation
-        duration. It is called automatically by `Time_solver.solve()`.
+        State_saver has been used. It stores metadata such as the simulation
+        duration. It is called automatically by Time_solver.solve().
         """
         self.simtime_end = time.time()
         simtime = self.simtime_end - self.simtime_start
