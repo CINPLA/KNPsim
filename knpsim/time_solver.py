@@ -87,9 +87,11 @@ class Time_solver:
             print("Current time in simulation: " + str(self.t))
         self.t += self.dt
 
+        # Call live_plotter, if it is used
         if self.simulator.live_plotter:
             self.simulator.live_plotter.plot()
 
+        # Call state_saver, if it is used
         if self.simulator.state_saver:
             self.simulator.state_saver.save_state()
 

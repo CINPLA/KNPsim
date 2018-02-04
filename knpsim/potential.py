@@ -1,6 +1,9 @@
 import sys
 from dolfin import Function, Constant, interpolate, inner, nabla_grad, dx
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
 
 class Potential:
     """
@@ -13,8 +16,12 @@ class Potential:
         self.bc = bc
 
     def set_form(self, form):
-        print("Error! You should always use a subclass of Potential!")
-        sys.exit(1)
+        """
+        This function is called by simulator.set_form to set up the equations
+        for the electric field. This function will
+        """
+        raise Error("Error! You should always use a subclass of Potential!")
+
 
 
 class KirchoffPotential(Potential):
