@@ -6,7 +6,7 @@ from dolfin import Expression, Constant
 class Ion:
     """
     This class keeps track of mesh and the function space of the electro
-    diffusion solver.
+    diffusion solver. It also c
     """
     def __init__(self, simulator, charge, diffusion_coefficient,
                  initial_condition, boundary_concentration, boundary, name,

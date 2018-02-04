@@ -5,6 +5,17 @@ import time
 
 
 class State_saver:
+    """
+    This class saves the result of an electrodiffusion simulation. It is
+    initialized with a system. It should be initialized after
+    simulator.initialize_simulator(), but before time_solver.solve().
+
+    Args:
+        filename (str): Relative path to where the result should be saved.
+        simulator (Simulator): The Simulator instance for the simulation.
+        notes (str): Any notes on the simulation.
+        save_step (int, optional): The result is saved every save_step-th step.
+    """
     def __init__(self, filename, simulator, notes, save_step=1):
         self.simulator = simulator
         self.filename = filename
@@ -38,13 +49,10 @@ class State_saver:
         self.simtime_start = time.time()
         self.save_state()
 
-    def save_state(self, multiple_files=False):
+    def save_state(self):
         """
         This function saves the potential and the concentrations at the current
-        time step. The input 'multiple_files' specifies if there should be a
-        separate file for each time step (recommended if the run is not
-        guaranteed to complete). In each case, there will still be a master
-        file.
+        time step. It is called automatically be ´Time_solver.solve()´.
         """
         self.index += 1
         if self.index == self.save_step:
@@ -54,6 +62,11 @@ class State_saver:
             self.index = 0
 
     def finalize(self):
+        """
+        This function should be called at the end of a simulation where
+        ´State_saver´ has been used. It stores metadata such as the simulation
+        duration. It is called automatically by `Time_solver.solve()`
+        """
         self.simtime_end = time.time()
         simtime = self.simtime_end - self.simtime_start
         n_procs = MPI.size(mpi_comm_world())

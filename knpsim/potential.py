@@ -4,7 +4,8 @@ from dolfin import Function, Constant, interpolate, inner, nabla_grad, dx
 
 class Potential:
     """
-    Contains the electric field used in the electro-diffusion solver
+    Contains the electric field used in the electro-diffusion solver. Should
+    always be called from a subclass.
     """
     def __init__(self, simulator, bc=None):
         self.simulator = simulator
