@@ -44,7 +44,7 @@ ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 # Set up time solver
 dt = 1e-10
-time_solver = Time_solver(simulator, dt, t_stop=1e-7, rtol=1e-5)
+time_solver = Time_solver(simulator, dt, t_stop=1e-7, rtol=1e-5, relax=0.95)
 
 # Set potential type
 potential = KirchoffPotential(simulator)

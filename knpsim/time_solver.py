@@ -20,10 +20,11 @@ class Time_solver:
         t_stop (float, optional): The ending time for the simulator.
         atol (float, optional): Passed to the newton solver. Absolute tolerance
         rtol (float, optional): Passed to the Newton solver. Relative tolerance
-        max_iter (int, optional): Padded to the Newton solver. Max iterations.
+        max_iter (int, optional): Passed to the Newton solver. Max iterations.
+        relax (float, optional): Passed to the Newton solver. Relaxation param.
     """
     def __init__(self, simulator, dt, t_start=0., t_stop=1.0, atol=1e-9,
-                 rtol=1e-6, max_iter=10):
+                 rtol=1e-6, max_iter=10, relax=1.0):
         self.simulator = simulator
         self.dt = dt
         self.t_start = t_start
@@ -34,6 +35,7 @@ class Time_solver:
         self.atol = atol
         self.rtol = rtol
         self.max_iter = max_iter
+        self.relax = relax
 
     def set_time_step_size(self, dt):
         """
@@ -77,7 +79,8 @@ class Time_solver:
         Newton_manual(self.simulator.Jac, self.simulator.form,
                       self.simulator.u_new, self.simulator.u_res,
                       bcs=self.simulator.bcs, deltas=pointsources,
-                      max_it=self.max_iter, atol=self.atol, rtol=self.rtol)
+                      max_it=self.max_iter, atol=self.atol, rtol=self.rtol,
+                      relax=self.relax)
 
         # alternative, use FEniCS solver (does not work with point sources)
         # solve(self.simulator.form==0, self.simulator.u_new,
