@@ -1,8 +1,9 @@
 """
-This script simulates a system of two ion species, starting with a step-
-function concentration profile, using the KNP formalism. It uses a time step
-of 0.1 ns, and runs from 0 to 1e-7 seconds. The results are stored in the file
-knp_zoom.h5
+This script simulates a system of four ion species, starting with uniform
+concentration profiles. The system has an ion source and an ion sink.
+The simulation uses the KNP formalism. It uses a time step of 2.0 ms, and
+runs from 0 to 2 seconds. The results are stored in the file
+knp_point_source.h5
 """
 from knpsim import *
 from dolfin import *
