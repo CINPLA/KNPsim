@@ -2,18 +2,22 @@ from knpsim import *
 from dolfin import *
 import time
 
-p0 = Point(0,0,0)
-p1 = Point(400e-6,400e-6,20e-6)
+# Set up mesh
+p0 = Point(0, 0, 0)
+p1 = Point(400e-6, 400e-6, 20e-6)
 mesh = BoxMesh(p0, p1, 30, 30, 5)
+
+# initialize geometry and simulator
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
-print "loaded mesh and made spaces!"
 
 def boundary(x, on_boundary):
     return on_boundary
 
-lambda_o = 1.6 # ECS tortuousity, Chen & Nicholson 2000;
+
+# Set up the ion species
+lambda_o = 1.6  # ECS tortuousity, Chen & Nicholson 2000;
 
 init_cond_Ca = Expression('1.4', degree=4)
 z_Ca = 2
@@ -34,7 +38,6 @@ z_Cl = -1
 D_Cl = 2.03e-9/lambda_o**2
 init_Cl = init_cond_Cl
 c_boundary_Cl = init_cond_Cl
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 init_cond_K = Expression('3', degree=4)
@@ -42,18 +45,21 @@ z_K = 1
 D_K = 1.96e-9/lambda_o**2
 init_K = init_cond_K
 c_boundary_K = init_cond_K
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
+
+# Define current sources
 def mag_func(t):
     ecsfrac = 0.2
-    return 0.1*(t<1e0)*1e-9/ecsfrac
+    return 0.1*(t < 1e0)*1e-9/ecsfrac
+
 
 def neg_mag_func(t):
     return -mag_func(t)
 
-p1 = Point(120e-6, 200e-6, 10e-6)
-p2 = Point(280e-6, 200e-6, 10e-6)
+
+p1 = Point(120e-6, 200e-6, 10e-6)  # position of point source
+p2 = Point(280e-6, 200e-6, 10e-6)  # position of point sink
 
 current_1 = Current(mag_func, ion_K)
 currents = [current_1]
@@ -65,20 +71,21 @@ currents = [current_2]
 delta = Delta(p2, currents)
 simulator.add_point_source(delta)
 
+# Set up time solver
 dt = 2e-3
 time_solver = Time_solver(simulator, dt, t_stop=2e0)
+
+# Set potential type
 potential = KirchoffPotential(simulator)
 
+# Initialize simulator
 print("initializing")
-
 simulator.initialize_simulator()
-
 print("initialized!")
 
-# live_plotter = Live_plotter(simulator)
 
-fname = dirname + "/knp_long_with_ca_low_res_ecsfrac.h5"
+fname = "knp_point_source.h5"
 notes = "This simulation considers a point source in a 3d grid, with knp"
-state_saver = State_saver(fname,simulator, notes)
+state_saver = State_saver(fname, simulator, notes)
 
 time_solver.solve()
