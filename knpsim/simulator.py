@@ -3,13 +3,16 @@ from dolfin import *
 from .ion import Ion
 from .time_solver import Time_solver
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
 
+
 class DuplicationError(Error):
     """Duplication error"""
     pass
+
 
 class Simulator:
     """
@@ -45,7 +48,7 @@ class Simulator:
         self.psi = self.R*self.T/self.F
         self.eps_r = 80
         self.epsilon = self.eps_0*self.eps_r
-        self.deltas = [] # deltas are added later by making a Delta object
+        self.deltas = []  # deltas are added later by making a Delta object
         self.N = 0  # number of ion species currently in the simulator
 
     def add_ion(self, ion):
@@ -89,7 +92,8 @@ class Simulator:
         """
         assert(isinstance(potential, Potential))
         if self.potential is not None:
-            raise DuplicationError("Can only set one potential for the system!")
+            raise DuplicationError("Can only set one potential for \
+                                    the system!")
         else:
             self.potential = potential
 
@@ -192,9 +196,10 @@ class Simulator:
             z = Constant(ion.z)
             v = self.v_list[i]
             k = Constant(1/self.time_solver.dt)
-            self.form += (k*(c_new - c)*v + inner(D*nabla_grad(c_new) +
-                                                  D*c_new*z*nabla_grad(phi_new)/psi,
-                                                  nabla_grad(v)) - f*v)*dx
+            self.form += (k*(c_new - c)*v + inner(
+                                            D*nabla_grad(c_new) +
+                                            D*c_new*z*nabla_grad(phi_new)/psi,
+                                            nabla_grad(v)) - f*v)*dx
 
         self.form = self.potential.set_form(self.form)
         self.w = TrialFunction(self.geometry.W)

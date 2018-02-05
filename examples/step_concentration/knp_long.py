@@ -42,7 +42,7 @@ ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, None, "Cl")
 
 # Set up time solver
 dt = 1e-3
-time_solver = Time_solver(simulator, dt, t_stop=10, rtol=1e-3)
+time_solver = Time_solver(simulator, dt, t_stop=10, rtol=5e-3)
 
 # Set potential type
 potential = KirchoffPotential(simulator)
@@ -53,7 +53,7 @@ simulator.initialize_simulator()
 print("initialized simulator!")
 
 # Set up state saver
-fname = "knp_step_concentration_long.h5"
+fname = "knp_long.h5"
 notes = "This simulation considers a step concentration profile in 1D, solved \
     with KNP."
 

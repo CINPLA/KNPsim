@@ -18,8 +18,8 @@ class Time_solver:
         dt (float): the time step.
         t_start (float, optional): The starting time for the simulator.
         t_stop (float, optional): The ending time for the simulator.
-        atol (float, optional): Passed to the newton solver. Absolute tolerance.
-        rtol (float, optional): Passed to the Newton solver. Relative tolerance.
+        atol (float, optional): Passed to the newton solver. Absolute tolerance
+        rtol (float, optional): Passed to the Newton solver. Relative tolerance
         max_iter (int, optional): Padded to the Newton solver. Max iterations.
     """
     def __init__(self, simulator, dt, t_start=0., t_stop=1.0, atol=1e-9,
@@ -63,13 +63,15 @@ class Time_solver:
                 I_i = current.magnitude_function(self.t)
                 I_sum += I_i
                 if current.ion is not None:
-                    pointsources.append(PointSource(self.simulator.geometry.W.sub(current.ion.index),
-                                                    delta.point,
-                                                    I_i/(self.simulator.F*current.ion.z)))
+                    pointsources.append(PointSource(
+                        self.simulator.geometry.W.sub(current.ion.index),
+                        delta.point,
+                        I_i/(self.simulator.F*current.ion.z)))
 
             if isinstance(self.simulator.potential, KirchoffPotential):
-                pointsources.append(PointSource(self.simulator.geometry.W.sub(self.simulator.N+1),
-                                                delta.point, I_sum))
+                pointsources.append(PointSource(
+                    self.simulator.geometry.W.sub(self.simulator.N+1),
+                    delta.point, I_sum))
 
         # call solver:
         Newton_manual(self.simulator.Jac, self.simulator.form,
@@ -101,12 +103,13 @@ class Time_solver:
         solve_for_time_step(). Afterwards, state_saver.finalize() is called,
         provided that state_saver has been initialized.
         """
-        while self.t < self.t_stop:
+        while self.t <= self.t_stop:
             sim_t0 = time.clock()
             self.solve_for_time_step()
             sim_t1 = time.clock()
             if MPI.rank(mpi_comm_world()) == 0:
-                print("The time step was solved in " + str(sim_t1-sim_t0) + " seconds.")
+                print("The time step was solved in " + str(sim_t1-sim_t0) +
+                      " seconds.")
 
         if self.simulator.state_saver:
             self.simulator.state_saver.finalize()
