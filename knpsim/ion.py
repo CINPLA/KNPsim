@@ -2,6 +2,7 @@ import sys
 import random
 from dolfin import Expression, Constant
 
+
 class Ion:
     """
     This class keeps track of mesh and the function space of the electro

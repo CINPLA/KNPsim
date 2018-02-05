@@ -18,7 +18,7 @@ class Geometry:
     """
     def __init__(self, mesh, element='P', order=1):
         self.meshtype = mesh
-        self.space = space
+        self.element = element
         self.order = order
         self.element_type_list = [interval, triangle, tetrahedron]
 

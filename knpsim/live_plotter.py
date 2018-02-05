@@ -7,7 +7,7 @@ import sys
 class Live_plotter:
     """
     This class, when initialized with a simulator, will plot the solution at
-    runtime. Currently depricated. 
+    runtime. Currently depricated.
     """
     def __init__(self, simulator):
         print("the live plotter is deprecated as fenics no longer supports \

@@ -1,9 +1,11 @@
 import sys
 from dolfin import Function, Constant, interpolate, inner, nabla_grad, dx
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
+
 
 class Potential:
     """
@@ -30,7 +32,6 @@ class Potential:
             form: A FEniCS variational form.
         """
         raise Error("Error! You should always use a subclass of Potential!")
-
 
 
 class KirchoffPotential(Potential):
@@ -162,7 +163,7 @@ class ZeroPotential(Potential):
             rho += F*ion.z*ion.c_new
         self.rho = rho
 
-        # update variational form 
+        # update variational form
         v, d = self.simulator.v_phi, self.simulator.d_phi
         form += (inner(nabla_grad(self.phi_new), nabla_grad(v)) +
                  self.dummy_new*v + self.phi_new*d)*dx
