@@ -12,13 +12,13 @@ import time
 x0 = 49.9e-6
 x1 = 50.1e-6
 xmid = 50e-6
+mesh = IntervalMesh(10000, x0, x1)
 
 # initialize geometry and simulator
-mesh = IntervalMesh(10000, x0, x1)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
-print "loaded mesh and made spaces!"
+print("loaded mesh and made spaces!")
 
 
 def boundary(x, on_boundary):
@@ -55,10 +55,9 @@ simulator.initialize_simulator()
 print("initialized!")
 
 # Set up state saver
-fname = "knp_binary.h5"
-notes = """
-This simulation considers a step concentration profile in 1D, solved with KNP.
-"""
+fname = "knp_zoom.h5"
+notes = "This simulation considers a step concentration profile in 1D, solved \
+    with KNP."
 state_saver = State_saver(fname, simulator, notes)
 
 # Run simulation

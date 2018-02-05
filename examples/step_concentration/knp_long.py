@@ -1,7 +1,7 @@
 """
 This script simulates a system of two ion species, starting with a step-
 function concentration profile, using the KNP formalism. It uses a time step
-of 0.01 s, and runs from 0 to 10 seconds. The results are stored in the file
+of 1.0 ms, and runs from 0 to 10 seconds. The results are stored in the file
 knp_long.h5
 """
 from knpsim import *
@@ -54,9 +54,9 @@ print("initialized simulator!")
 
 # Set up state saver
 fname = "knp_step_concentration_long.h5"
-notes = """
-This simulation considers a step concentration profile in 1D, solved with KNP.
-"""
+notes = "This simulation considers a step concentration profile in 1D, solved \
+    with KNP."
+
 state_saver = State_saver(fname, simulator, notes)
 
 # Run simulation
