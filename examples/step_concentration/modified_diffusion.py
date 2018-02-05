@@ -45,7 +45,9 @@ time_solver = Time_solver(simulator, dt, t_stop=10)
 potential = ZeroPotential(simulator)
 
 # Initialize simulator
+print("initializing simulator...")
 simulator.initialize_simulator()
+print("initialized simulator!")
 
 # Set up state saver
 fname = "modified_diffusion.h5"
