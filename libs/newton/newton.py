@@ -49,7 +49,7 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
 
         if MPI.rank(mpi_comm_world()) == 0:
             if report_convergence:
-                print(("Newton iteration %d: r (atol) = %.3e (tol = %.3e), r" + \
+                print(("Newton iteration %d: r (atol) = %.3e (tol = %.3e), r" +
                       "(rel) = %.3e (tol = %.3e)") % (Iter, residual, atol,
                       rel_res, rtol))
         Iter += 1
