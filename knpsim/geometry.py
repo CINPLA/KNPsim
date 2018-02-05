@@ -57,4 +57,4 @@ class Geometry:
                                 order)
         self.R0 = FiniteElement('R', self.element_type_list[self.dim-1], 0)
         self.V = FunctionSpace(mesh, self.P1)
-        self.R = FunctionSpace(mesh, "R", self.R0)
+        self.R = FunctionSpace(mesh, self.R0)
