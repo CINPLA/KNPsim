@@ -13,6 +13,16 @@ source activate knpsim
 python setup.py install
 ```
 
+# Testing
+Run the command `pytest` from the top directory. Make sure you have `pytest`
+installed (`conda install pytest`).
+
+# Reproducing the results of the paper
+In order to reproduce the results of (TODO: future paper), run the script `run_all_examples_and_gather_data.sh`. Then go to `KNPsim/make_the_figures`,
+open the notebooks and run all the cells in each.
+Note that All the figures have been formatted in Inkscape for publication
+purposes.
+
 # How to set up an electrodiffusion problem in knpsim
 A script using knpsim will usually go through the following steps:
 1. Create an instance of `Geometry` (will involve making or loading a mesh).
@@ -23,16 +33,3 @@ A script using knpsim will usually go through the following steps:
 6. Initialize the simulation by calling `simulator.initialize_simulator()`
 7. (optional) Create an instance of `State_saver`, to save the result.
 8. Run the simulation by calling `time_solver.solve()`
-
-# Reproducing the results of the paper
-In order to reproduce the results of (TODO: future paper), perform the
-following steps:
-1. Go to each subfolder in `KNPsim/examples` and run the examples. Each example
-  has a README.md with details on how to run them.
-2. Move the resulting h5 files to `KNPsim/make_the_figures/data`.
-3. In `KNPsim/make_the_figures` there is a notbook for each figure. Open each
-  notebook and run all the cells.
-Note that All the figures have been formatted in Inkscape for publication
-porposes.
-# References
-TODO

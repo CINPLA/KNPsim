@@ -1,3 +1,9 @@
+"""
+This script simulates a system of two ion species, starting with a step-
+function concentration profile, using the KNP formalism. It uses a time step
+of 0.1 ns, and runs from 0 to 1e-7 seconds. The results are stored in the file
+knp_zoom.h5
+"""
 from knpsim import *
 from dolfin import *
 import time
@@ -83,9 +89,10 @@ print("initializing")
 simulator.initialize_simulator()
 print("initialized!")
 
-
+# Set up state saver
 fname = "knp_point_source.h5"
 notes = "This simulation considers a point source in a 3d grid, with knp"
 state_saver = State_saver(fname, simulator, notes)
 
+# Run simulation
 time_solver.solve()
