@@ -15,10 +15,14 @@ python setup.py install
 
 # How to set up an electrodiffusion problem in knpsim
 A script using knpsim will usually go through the following steps:
-1. Create an instance of Geometry (will involve making or loading a mesh).
-2. Create an instance of Simulator.
+1. Create an instance of `Geometry` (will involve making or loading a mesh).
+2. Create an instance of `Simulator`.
 3. Create instances of the ion species.
-4. 
+4. (optional) Set up current point sources
+5. Create an instance of `Time_solver`
+6. Initialize the simulation by calling `simulator.initialize_simulator()`
+7. (optional) Create an instance of `State_saver`, to save the result.
+8. Run the simulation by calling `time_solver.solve()`
 
 # Reproducing the results of the paper
 In order to reproduce the results of (TODO: future paper), perform the
