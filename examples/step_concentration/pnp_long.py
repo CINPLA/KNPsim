@@ -44,7 +44,7 @@ ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, None, "Cl")
 
 # Set up the time solver
 dt = 1e-3
-time_solver = Time_solver(simulator, dt, t_stop=10, rtol=1e-3, relax=0.95)
+time_solver = Time_solver(simulator, dt, t_stop=10, rtol=5e-3, relax=0.95)
 
 # set potential type
 potential = PoissonPotential(simulator)
