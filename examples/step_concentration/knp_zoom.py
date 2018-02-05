@@ -1,13 +1,19 @@
-import sys
-import os
-from impKNP import *
+"""
+This script simulates a system of two ion species, starting with a step-
+function concentration profile, using the KNP formalism. It uses a time step
+of 0.1 ns, and runs from 0 to 1e-7 seconds. The results are stored in the file
+knp_zoom.h5
+"""
+from knpsim import *
 from dolfin import *
 import time
 
+# set up mesh
 x0 = 49.9e-6
 x1 = 50.1e-6
 xmid = 50e-6
 
+# initialize geometry and simulator
 mesh = IntervalMesh(10000, x0, x1)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
@@ -19,6 +25,7 @@ def boundary(x, on_boundary):
     return on_boundary
 
 
+# Set up the ion species
 lambda_o = 1.6  # ECS tortuousity, Chen & Nicholson 2000;
 
 init_cond_Na = Expression('(140 + 10*(x[0]>=xmid))', degree=4, xmid=xmid)
@@ -35,20 +42,24 @@ init_Cl = init_cond_Cl
 c_boundary_Cl = init_cond_Cl
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
+# Set up time solver
 dt = 1e-10
 time_solver = Time_solver(simulator, dt, t_stop=1e-7, rtol=1e-5)
+
+# Set potential type
 potential = KirchoffPotential(simulator)
 
+# Initialize simulator
 print("initializing")
 simulator.initialize_simulator()
 print("initialized!")
 
-# live_plotter = Live_plotter(simulator)
-
+# Set up state saver
 fname = "knp_binary.h5"
 notes = """
 This simulation considers a step concentration profile in 1D, solved with KNP.
 """
 state_saver = State_saver(fname, simulator, notes)
 
+# Run simulation
 time_solver.solve()

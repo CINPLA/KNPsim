@@ -2,7 +2,7 @@
 This script simulates a system of two ion species, starting with a step-
 function concentration profile, using the KNP formalism. It uses a time step
 of 0.01 s, and runs from 0 to 10 seconds. The results are stored in the file
-knp_step_concentration_long.h5
+knp_long.h5
 """
 from knpsim import *
 from dolfin import *
@@ -41,7 +41,7 @@ c_boundary_Cl = init_cond_Cl
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, None, "Cl")
 
 # Set up time solver
-dt = 1e-2
+dt = 1e-3
 time_solver = Time_solver(simulator, dt, t_stop=10, rtol=1e-3)
 
 # Set potential type

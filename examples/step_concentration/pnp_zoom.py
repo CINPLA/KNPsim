@@ -1,4 +1,4 @@
-from impKNP import *
+from knpsim import *
 from dolfin import *
 import time
 

@@ -1,4 +1,4 @@
-from impKNP import *
+from knpsim import *
 from dolfin import *
 import time
 
@@ -33,7 +33,7 @@ init_Cl = init_cond_Cl
 c_boundary_Cl = init_cond_Cl
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, None, "Cl")
 
-dt = 1e-2
+dt = 1e-3
 time_solver = Time_solver(simulator, dt, t_stop=10, rtol=1e-3)
 potential = PoissonPotential(simulator)
 
