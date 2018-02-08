@@ -22,7 +22,7 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
         b = assemble(-F)
         t1 = time.clock()
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Assemble Jacobian took " + str(t1 - t0) + " seconds!")
+            print("Assemble Jacobian took {:02.03e} seconds!".format(t1 - t0))
 
         # Solve linear system
         [bc.apply(A, b, u.vector()) for bc in bcs]
@@ -32,7 +32,7 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
         solve(A, u_res.vector(), b)
         t1 = time.clock()
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Linear solve took " + str(t1 - t0) + " seconds!")
+            print("Linear solve took {:02.03e} seconds!".format(t1 - t0))
 
         # Update solution
         u.vector().axpy(relax, u_res.vector())
@@ -50,6 +50,6 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
         if MPI.rank(mpi_comm_world()) == 0:
             if report_convergence:
                 print(("Newton iteration %d: r (atol) = %.3e (tol = %.3e), r" +
-                      "(rel) = %.3e (tol = %.3e)") % (Iter, residual, atol,
+                      "(rel) = %.3e (tol = %.3e)\n") % (Iter, residual, atol,
                       rel_res, rtol))
         Iter += 1

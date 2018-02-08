@@ -89,7 +89,7 @@ class Time_solver:
         # Update old solution
         assign(self.simulator.u, self.simulator.u_new)
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Current time in simulation: " + str(self.t))
+            print("Current time in simulation: {:02.03e}".foramt(self.t))
         self.t += self.dt
 
         # Call live_plotter, if it is used
