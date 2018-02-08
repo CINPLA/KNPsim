@@ -3,12 +3,10 @@ from mshr import *
 import scipy.io
 import numpy as np
 
-# TODO: Wrapp in function of and add some comments
-# TODO: Store 'revdata_100fold.mat' in folk.uio.no/aslakwb or similar, and then
-#       download
 data = scipy.io.loadmat('revdata_100fold.mat')
 
-print data.keys()
+if MPI.rank(mpi_comm_world()) == 0:
+    print(data.keys())
 
 x = data['x']
 y = data['y']
@@ -18,7 +16,8 @@ xlen = x.max() - x.min()
 ylen = y.max() - y.min()
 zlen = z.max() - z.min()
 
-print xlen, ylen, zlen
+if MPI.rank(mpi_comm_world()) == 0:
+    print(xlen, ylen, zlen)
 
 padding_fraction = 0.1
 
@@ -48,7 +47,8 @@ resolution = 40
 
 mesh = generate_mesh(domain, resolution)
 
-print mesh.coordinates().shape
+if MPI.rank(mpi_comm_world()) == 0:
+    print(mesh.coordinates().shape)
 
 f = HDF5File(mesh.mpi_comm(), "mesh_co.hdf5", 'w')
 f.write(mesh, 'mesh')

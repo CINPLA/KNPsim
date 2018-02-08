@@ -29,19 +29,22 @@ class Geometry:
             if len(mesh) == self.dim:
                 self.mesh = domain_type[self.dim-1](*mesh)
             else:
-                print("dimension mismatch in set_geometry! mesh does not match \
-                    dimension")
-                print(str(self.dim))
-                print(str(len(mesh)))
+                if MPI.rank(mpi_comm_world()) == 0:
+                    print("Dimension mismatch in set_geometry!" + \
+                          "Mesh does not match dimension")
+                    print(str(self.dim))
+                    print(str(len(mesh)))
                 sys.exit()
 
         elif isinstance(mesh, str):
-            print("interpreting mesh input as filename...")
+            if MPI.rank(mpi_comm_world()) == 0:
+                print("Interpreting mesh input as filename...")
             try:
                 self.mesh = Mesh(mesh)
                 self.dim = self.mesh.geometry().dim()
             except IOError:
-                print("Could not find the file spesified, exiting....")
+                if MPI.rank(mpi_comm_world()) == 0:
+                    print("Could not find the file spesified, exiting....")
                 sys.exit(1)
 
         elif isinstance(mesh, Mesh):
@@ -49,12 +52,12 @@ class Geometry:
             self.dim = self.mesh.geometry().dim()
 
         else:
-            print("input not understood! Exiting...")
+            if MPI.rank(mpi_comm_world()) == 0:
+                print("Input not understood! Exiting...")
             sys.exit(1)
 
         # Set elements:
-        self.P1 = FiniteElement(element, self.element_type_list[self.dim-1],
-                                order)
+        self.P1 = FiniteElement(element, self.element_type_list[self.dim-1], order)
         self.R0 = FiniteElement('R', self.element_type_list[self.dim-1], 0)
         self.V = FunctionSpace(mesh, self.P1)
         self.R = FunctionSpace(mesh, self.R0)

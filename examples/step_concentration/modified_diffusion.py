@@ -18,7 +18,8 @@ mesh = IntervalMesh(10000, x0, x1)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
-print("loaded mesh and made spaces!")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("loaded mesh and made spaces!")
 
 
 def boundary(x, on_boundary):
@@ -45,9 +46,11 @@ time_solver = Time_solver(simulator, dt, t_stop=10)
 potential = ZeroPotential(simulator)
 
 # Initialize simulator
-print("initializing simulator...")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initializing simulator...")
 simulator.initialize_simulator()
-print("initialized simulator!")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initialized simulator!")
 
 # Set up state saver
 fname = "modified_diffusion.h5"

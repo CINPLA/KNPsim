@@ -86,9 +86,11 @@ time_solver = Time_solver(simulator, dt, t_stop=2e0)
 potential = KirchoffPotential(simulator)
 
 # Initialize simulator
-print("initializing")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initializing")
 simulator.initialize_simulator()
-print("initialized!")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initialized!")
 
 # Set up state saver
 fname = "knp_point_source.h5"

@@ -18,7 +18,8 @@ mesh = IntervalMesh(10000, x0, x1)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
-print("loaded mesh and made spaces!")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("Loaded mesh and created function spaces!")
 
 
 def boundary(x, on_boundary):
@@ -50,9 +51,11 @@ time_solver = Time_solver(simulator, dt, t_stop=10, rtol=5e-3, relax=0.95)
 potential = PoissonPotential(simulator)
 
 # Initialize simulator
-print("initializing")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initializing")
 simulator.initialize_simulator()
-print("initialized!")
+if MPI.rank(mpi_comm_world()) == 0:
+    print("initialized!")
 
 # Set up state saver
 fname = "pnp_long.h5"
