@@ -112,7 +112,7 @@ class Time_solver:
             self.solve_for_time_step()
             sim_t1 = time.clock()
             if MPI.rank(mpi_comm_world()) == 0:
-                print("The time step was solved in {:02.03f} seconds."\
+                print("The time step was solved in {:02.03f} seconds.\n"\
                         .format(sim_t1 - sim_t0))
 
         if self.simulator.state_saver:
