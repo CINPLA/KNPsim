@@ -4,7 +4,7 @@ import h5py
 import time
 
 # New-style class syntax to keep python 2 support
-class State_saver:
+class State_saver(object):
     """
     This class saves the result of an electrodiffusion simulation. It is
     initialized with a system. It should be initialized after
