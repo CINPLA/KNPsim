@@ -3,8 +3,8 @@ import numpy as np
 import time
 
 
-def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
-                  max_it=20, relax=1.0, report_convergence=True):
+def Newton_manual(J, F, u, u_res, bcs, deltas, atol, rtol, max_iter,
+                  relax, report_convergence):
     parameters['form_compiler']['optimize'] = True
     parameters['form_compiler']['cpp_optimize'] = True
     # parameters['form_compiler']['cpp_optimize_flags'] = '-O3'
@@ -15,14 +15,14 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
     rel_res = residual
 
     # Iterate until the residual criteria is meet, or max iterations
-    while rel_res > rtol and residual > atol and Iter < max_it:
+    while rel_res > rtol and residual > atol and Iter < max_iter:
         # Assemble system
         t0 = time.clock()
         A = assemble(J)
         b = assemble(-F)
         t1 = time.clock()
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Assemble Jacobian took {:02.03e} seconds!".format(t1 - t0))
+            print("Assemble Jacobian took {:02.03f} seconds!".format(t1 - t0))
 
         # Solve linear system
         [bc.apply(A, b, u.vector()) for bc in bcs]
@@ -32,7 +32,7 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
         solve(A, u_res.vector(), b)
         t1 = time.clock()
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Linear solve took {:02.03e} seconds!".format(t1 - t0))
+            print("Linear solve took {:02.03f} seconds!".format(t1 - t0))
 
         # Update solution
         u.vector().axpy(relax, u_res.vector())
@@ -49,7 +49,7 @@ def Newton_manual(J, F, u, u_res, bcs=[], deltas=[], atol=1e-12, rtol=1e-12,
 
         if MPI.rank(mpi_comm_world()) == 0:
             if report_convergence:
-                print(("Newton iteration %d: r (atol) = %.3e (tol = %.3e), r" +
-                      "(rel) = %.3e (tol = %.3e)\n") % (Iter, residual, atol,
+                print(("Newton iteration %d: r(atol) = %.3e (tol=%.3e), r" +
+                      "(rel) = %.3e (tol=%.3e)\n") % (Iter, residual, atol,
                       rel_res, rtol))
         Iter += 1

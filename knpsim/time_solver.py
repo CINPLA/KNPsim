@@ -24,7 +24,7 @@ class Time_solver:
         relax (float, optional): Passed to the Newton solver. Relaxation param.
     """
     def __init__(self, simulator, dt, t_start=0., t_stop=1.0, atol=1e-9,
-                 rtol=1e-6, max_iter=10, relax=1.0):
+                 rtol=1e-6, max_iter=10, relax=1.0, report_convergence=True):
         self.simulator = simulator
         self.dt = dt
         self.t_start = t_start
@@ -36,6 +36,7 @@ class Time_solver:
         self.rtol = rtol
         self.max_iter = max_iter
         self.relax = relax
+        self.report_convergence = report_convergence
 
     def set_time_step_size(self, dt):
         """
@@ -79,8 +80,8 @@ class Time_solver:
         Newton_manual(self.simulator.Jac, self.simulator.form,
                       self.simulator.u_new, self.simulator.u_res,
                       bcs=self.simulator.bcs, deltas=pointsources,
-                      max_it=self.max_iter, atol=self.atol, rtol=self.rtol,
-                      relax=self.relax)
+                      max_iter=self.max_iter, atol=self.atol, rtol=self.rtol,
+                      relax=self.relax, report_convergence=self.report_convergence)
 
         # alternative, use FEniCS solver (does not work with point sources)
         # solve(self.simulator.form==0, self.simulator.u_new,
@@ -89,7 +90,7 @@ class Time_solver:
         # Update old solution
         assign(self.simulator.u, self.simulator.u_new)
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Current time in simulation: {:02.03e}".foramt(self.t))
+            print("Solved for the time {:02.03e} in simulation.".format(self.t))
         self.t += self.dt
 
         # Call live_plotter, if it is used
@@ -111,8 +112,8 @@ class Time_solver:
             self.solve_for_time_step()
             sim_t1 = time.clock()
             if MPI.rank(mpi_comm_world()) == 0:
-                print("The time step was solved in " + str(sim_t1-sim_t0) +
-                      " seconds.")
+                print("The time step was solved in {:02.03f} seconds."\
+                        .format(sim_t1 - sim_t0))
 
         if self.simulator.state_saver:
             self.simulator.state_saver.finalize()
