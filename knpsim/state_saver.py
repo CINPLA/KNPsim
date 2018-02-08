@@ -3,7 +3,7 @@ import numpy as np
 import h5py
 import time
 
-
+# New-style class syntax to keep python 2 support
 class State_saver:
     """
     This class saves the result of an electrodiffusion simulation. It is
@@ -16,21 +16,27 @@ class State_saver:
         notes (str): Any notes on the simulation.
         save_step (int, optional): The result is saved every save_step-th step.
     """
+
+    def __new__(cls, filename, simulator, notes, save_step=1):
+        if MPI.sum(mpi_comm_world(), MPI.rank(mpi_comm_world())) > 0:
+            if not has_hdf5_parallel():
+                if MPI.rank(mpi_comm_world()) == 0:
+                    print("WARNING: HDF5 is not built with MPI, and the state saver" + \
+                          " will not work.\nEither build HDF5 with MPI or run in serial.")
+                return None
+
+        return super(State_saver, cls).__new__(cls)
+
     def __init__(self, filename, simulator, notes, save_step=1):
         self.simulator = simulator
         self.filename = filename
         simulator.state_saver = self
         self.hdf = HDF5File(simulator.geometry.mesh.mpi_comm(), filename, 'w')
         self.hdf.write(simulator.geometry.mesh, "geometry/mesh")
-        self.hdf.write(Function(
-            simulator.geometry.W),
-            "geometry/MixedFunctionSpace")
-        self.hdf.write(Function(
-            simulator.geometry.V),
-            "geometry/FunctionSpace")
-        self.hdf.write(
-            vertex_to_dof_map(simulator.geometry.V).astype(float),
-            'vertex_to_dof_map')
+        self.hdf.write(Function(simulator.geometry.W), "geometry/MixedFunctionSpace")
+        self.hdf.write(Function(simulator.geometry.V), "geometry/FunctionSpace")
+        self.hdf.write(vertex_to_dof_map(simulator.geometry.V).astype(float),
+                        'vertex_to_dof_map')
 
         attribute_holder = Function(simulator.geometry.V)
         attribute_holder = self.hdf.write(attribute_holder, 'attributes')
