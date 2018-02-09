@@ -12,3 +12,4 @@ from .state_saver import State_saver
 from .time_solver import Time_solver
 from .delta import Delta, Current
 from .live_plotter import Live_plotter
+from .newton import Newton_manual

@@ -3,7 +3,7 @@ from .potential import KirchoffPotential
 import sys
 import time
 
-from libs.newton.newton import *
+from .newton import *
 import numpy as np
 
 
