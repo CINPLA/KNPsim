@@ -1,6 +1,6 @@
 from knpsim import *
 from dolfin import *
-from argparse import ArgumenterParser
+from argparse import ArgumentParser
 import time
 
 
@@ -13,7 +13,7 @@ def str2bool(arg):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def step_consentration(zoom, potential, dt, T, x0, x1, relax, modified)
+def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
     # Set up mesh
     xmid = (x0 + x1) / 2
     mesh = IntervalMesh(10000, x0, x1)
@@ -23,8 +23,7 @@ def step_consentration(zoom, potential, dt, T, x0, x1, relax, modified)
     simulator = Simulator(geometry)
 
     # Define boundary
-    boundary = lambda x, on_boundary: on_boundary if zoom else None
-
+    boundary = (lambda x, on_boundary: on_boundary) if zoom else None
 
     # Initial condition
     init_cond = Expression('(140 + 10*(x[0]>=xmid))', degree=4, xmid=xmid)
@@ -46,28 +45,26 @@ def step_consentration(zoom, potential, dt, T, x0, x1, relax, modified)
         ion_X = Ion(simulator, z_X, D_X, init_cond, init_cond, boundary, "X")
 
     # Set up time solver
-    time_solver = Time_solver(simulator, dt, t_stop=T, rtol=5e-3, relax=relax)
+    time_solver = Time_solver(simulator, dt, t_stop=T, rtol=rtol, relax=relax)
 
     # Set potential type
     if potential == "kirchoff":
         potential = KirchoffPotential(simulator)
+        solver = "KNP"
     elif potential == "poisson":
         potential = PoissonPotential(simulator)
+        solver = "PNP"
     else:
         potential = ZeroPotential(simulator)
+        solver = "zero_potential"
 
     # Initialize simulator
     simulator.initialize_simulator()
 
     # Set up state saver
-    if potential == "kirchoff":
-        solver = "KNP"
-    elif potential == "poisson":
-        solver = "PNP"
-    else:
-        solver = "zero_potential"
     zoom = "zoom" if zoom else "long"
-    fname = solver.lower() + "_" + zoom ".h5"
+    fname = solver.lower() + "_" + zoom + ".h5"
+    fname = fname if not modified else "modified_diffusion.h5"
     notes = "This simulation considers a step concentration profile in 1D, solved" + \
             " with %s." % solver.replace("_", " ")
 
@@ -84,55 +81,60 @@ function concentration profile, using either PNP or KNP formalism."""
 
     parser.add_argument("-z", "--zoom",
                         default=False,
-                        dest="zoom"
+                        dest="zoom",
                         type=str2bool,
                         help="?")
 
     parser.add_argument("-p", "--potential",
                         default="kirchoff",
-                        dest="potential"
-                        choices=["kirchoff", "poisson", "zero"]
+                        dest="potential",
+                        choices=["kirchoff", "poisson", "zero"],
                         type=str,
                         help="?")
 
     parser.add_argument("-d", "--dt",
                         default=1e-3,
-                        dest="dt"
+                        dest="dt",
                         type=float,
                         help="?")
 
     parser.add_argument("-T", "--time",
                         default=10,
-                        dest="T"
+                        dest="T",
                         type=float,
                         help="?")
 
     parser.add_argument("-s", "--start",
                         default=-50e-6,
-                        dest="x0"
+                        dest="x0",
                         type=float,
                         help="?")
 
     parser.add_argument("-e", "--end",
                         default=50e-6,
-                        dest="x1"
+                        dest="x1",
                         type=float,
                         help="?")
 
     parser.add_argument("-w", "--relax",
                         default=0.95,
-                        dest="relax"
+                        dest="relax",
                         type=float,
                         help="?")
 
     parser.add_argument("-m", "--modified",
                         default=False,
-                        dest="modified"
+                        dest="modified",
                         type=bool,
                         help="?")
 
+    parser.add_argument("-r", "--rtol",
+                        default=5e-3,
+                        dest="rtol",
+                        type=float,
+                        help="?")
 
     args = parser.parse_args()
 
     step_concentration(args.zoom, args.potential, args.dt, args.T, args.x0,
-                       args.x1, args.relax, args.modified, args.t)
+                       args.x1, args.relax, args.modified, args.rtol)
