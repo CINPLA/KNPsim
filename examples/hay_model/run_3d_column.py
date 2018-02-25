@@ -5,7 +5,7 @@ import scipy.io as sio
 import numpy as np
 # parameters['form_compiler']['optimize'] = True
 
-ECSfrac = 0.2 # Fraction of tissue being extracellular space
+ECSfrac = 0.2  # Fraction of tissue being extracellular space
 
 d = sio.loadmat('revdata_100fold.mat')
 
@@ -16,17 +16,19 @@ f.read(mesh, 'mesh', False)
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
 
-y_coor = mesh.coordinates()[:,1]
+y_coor = mesh.coordinates()[:, 1]
 ymin = y_coor.min()
 ymax = y_coor.max()
 
 if MPI.rank(mpi_comm_world()) == 0:
     print("Loaded mesh and create function spaces!")
 
+
 def boundary(x, on_boundary):
     return on_boundary
 
-lambda_o = 1.6 # ECS tortuousity, Chen & Nicholson 2000;
+
+lambda_o = 1.6  # ECS tortuousity, Chen & Nicholson 2000;
 
 init_cond_Ca = Expression('1.4', degree=4)
 z_Ca = 2
@@ -47,7 +49,6 @@ z_Cl = -1
 D_Cl = 2.03e-9/lambda_o**2
 init_Cl = init_cond_Cl
 c_boundary_Cl = init_cond_Cl
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_Cl = Ion(simulator, z_Cl, D_Cl, init_Cl, c_boundary_Cl, boundary, "Cl")
 
 init_cond_K = Expression('3', degree=4)
@@ -55,7 +56,6 @@ z_K = 1
 D_K = 1.96e-9/lambda_o**2
 init_K = init_cond_K
 c_boundary_K = init_cond_K
-# f_Cl = Expression("x[0]*x[0]*(100-x[0])*(100-x[0])*t", t=0)
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
 factor = ECSfrac*10
@@ -73,8 +73,6 @@ z = d['z'].reshape(n_points)
 i_ion = ion_Na.z*ina + ion_K.z*ik + ion_Ca.z*ica + ion_Cl.z*icl
 current_arrays = [ica, ina, icl, ik]
 
-# n_x = 13
-# z_pos = np.linspace(150e-6, 1350e-6,n_x)
 dt = 1e-1
 
 for i in range(n_points):
@@ -94,13 +92,15 @@ for i in range(n_points):
     for idx, ion in enumerate(simulator.ion_list):
         ion_current_array = current_arrays[idx]
 
-        def ion_current(t, idx=idx, space_idx=i, ion_current_array=ion_current_array, ion=ion):
+        def ion_current(t, idx=idx, space_idx=i,
+                        ion_current_array=ion_current_array, ion=ion):
             time_idx = int(simulator.time_solver.t/1e-4)
             time_stop_idx = int((t + dt)/1e-4)
             if MPI.rank(mpi_comm_world()) == 0:
                 print ion.name, time_idx
                 print ion.name, time_stop_idx
-            cc = np.mean(ion_current_array[space_idx, time_idx:time_stop_idx+1])
+            cc = np.mean(ion_current_array[space_idx,
+                                           time_idx:(time_stop_idx + 1)])
             # print cc
             return cc
 
@@ -108,18 +108,17 @@ for i in range(n_points):
     delta = Delta(p, currents)
     simulator.add_point_source(delta)
 
-time_solver = Time_solver(simulator, dt, theta=1,t_start=8.1, t_stop=9.9)
+time_solver = Time_solver(simulator, dt, theta=1, t_start=8.1, t_stop=9.9)
 
-# ns = Neuron_source(simulator, 'active.h5')
 potential = KirchoffPotential(simulator)
 
 simulator.initialize_simulator()
 
-live_plotter = Live_plotter(simulator)
 
-# fname = "/media/andreavs/datadrive/knp_sims_SI/hay_model/knp_3.h5"
-# notes = "This simulation considers Hay model neuron in a cylindrical column, using knp"
-# state_saver = State_saver(fname,simulator, notes)
+fname = "/media/andreavs/datadrive/knp_sims_SI/hay_model/knp_3.h5"
+notes = "This simulation considers Hay model neuron in a cylindrical " + \
+        "column, using knp"
+state_saver = State_saver(fname, simulator, notes)
 
 time_solver.solve()
 
