@@ -49,7 +49,6 @@ for isim in range(Nsims):
                          str(singleSimT) +
                          '.mat')
 
-    print A.keys()
     times.append(A['times'])
     ina.append(A['ina'])
     ik.append(A['ik'])
@@ -81,16 +80,6 @@ VtimesA = np.concatenate(VtimesA, axis=1)
 imemb = np.concatenate(imemb, axis=1)
 icap = np.concatenate(icap, axis=1)
 Vsoma = np.concatenate(Vsoma, axis=1)
-
-print(ina.shape)
-print(ik.shap)
-print(ica.shape)
-print(ih.shape)
-print(il.shape)
-print(VtimesA.shape)
-print(imemb.shape)
-print(icap.shape)
-print(Vsoma.shape)
 
 B = {
     'times': times,

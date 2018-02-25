@@ -1,7 +1,7 @@
-import scipy.io
 import numpy as np
 import sys
 import os
+import h5py
 
 iseed = int(sys.argv[1])
 
@@ -83,13 +83,13 @@ isyn = np.concatenate(list_isyn, axis=1)
 
 # Convert to base SI units:
 times = times*1e-3  # s
-ica = ica*1e-9      # nA
-ina = ina*1e-9      # nA
-ik = ik*1e-9        # nA
-ix = ix*1e-9        # nA
-icap = icap*1e-9    # nA
-imemb = imemb*1e-9  # nA
-isyn = isyn*1e-9    # nA
+ica = ica*1e-9      # A
+ina = ina*1e-9      # A
+ik = ik*1e-9        # A
+ix = ix*1e-9        # A
+icap = icap*1e-9    # A
+imemb = imemb*1e-9  # A
+isyn = isyn*1e-9    # A
 
 x = x*1e-6  # meters
 y = y*1e-6  # meters
@@ -108,7 +108,12 @@ B = {
     'z': z,
 }
 
-folder_name = 'simulation_data/neuron_' + str(iseed)
-filename = folder_name + '/revdata_neuron_' + str(iseed) + '.mat'
+folder_name = '..'
+filename = folder_name + '/neuron_input_' + str(iseed) + '.h5'
 os.mkdir(folder_name)
+h = h5py.File(filename)
+for key, value in B.items():
+    h.create_dataset(key, data=value)
+
+h.close()
 scipy.io.savemat(filename, B)
