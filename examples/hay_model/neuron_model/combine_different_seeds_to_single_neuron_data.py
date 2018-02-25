@@ -5,57 +5,57 @@ import os
 
 iseed = int(sys.argv[1])
 
-list_ica = [];
-list_ina = [];
-list_ik = [];
-list_ix = [];
-list_icap = [];
-list_t = [];
-list_imemb = [];
-list_isyn = [];
-
-# 'simulation_data/currsums_parts_10000areagsynsmediumtau_fixeddt_type2_amp4.2e-05_tstop10000.0_nseg20_dt0.025_seed1_com200.0.mat'
-# 'simulation_data/currsums_parts_10000areagsynsmediumtau_fixeddt_type2_amp4.2e-05_tstop10000.0_nseg20_dt0.025_seed1_comb200.0'
+list_ica = []
+list_ina = []
+list_ik = []
+list_ix = []
+list_icap = []
+list_t = []
+list_imemb = []
+list_isyn = []
 
 for myseed in range(10):
     strseed = str(myseed*10 + iseed)
-    filename = 'simulation_data/currsums_parts_10000areagsynsmediumtau_fixeddt_type2_amp4.2e-05_tstop10000.0_nseg20_dt0.025_seed' + strseed + '_comb200.0.mat'
+    filename = 'simulation_data/currsums_parts_10000areagsynsmediumtau_' + \
+        'fixeddt_type2_amp4.2e-05_tstop10000.0_nseg20_dt0.025_seed' + \
+        strseed + '_comb200.0.mat'
     A = scipy.io.loadmat(filename)
 
-    iion0 = A['ik'] + A['ina'] + A['ica'] + A['il'] + A['ih'];
-    isyn = A['imemb'] - (iion0 + A['icap']);
+    iion0 = A['ik'] + A['ina'] + A['ica'] + A['il'] + A['ih']
+    isyn = A['imemb'] - (iion0 + A['icap'])
 
-    ix = A['il'] + A['ih'] + isyn; # all currents of unspecified ion species x
+    ix = A['il'] + A['ih'] + isyn  # all currents of unspecified ion species x
     ts_sim = A['times']
     ts_sim = np.reshape(ts_sim, np.size(ts_sim))
 
-    # Remove first 1600 ms of each simulation, to give the neuron time to settle
+    # Remove first 1600 ms of each simulation,
+    # to give the neuron time to settle
     ts_sim2 = ts_sim[ts_sim >= 1600] + 8400*myseed
 
     ica = A['ica']
-    ica = ica[:,np.where(ts_sim >= 1600)]
+    ica = ica[:, np.where(ts_sim >= 1600)]
     ica = np.reshape(ica, (ica.shape[0], ica.shape[2]))
 
     ina = A['ina']
-    ina = ina[:,np.where(ts_sim >= 1600)]
+    ina = ina[:, np.where(ts_sim >= 1600)]
     ina = np.reshape(ina, (ina.shape[0], ina.shape[2]))
 
     ik = A['ik']
-    ik = ik[:,np.where(ts_sim >= 1600)]
+    ik = ik[:, np.where(ts_sim >= 1600)]
     ik = np.reshape(ik, (ik.shape[0], ik.shape[2]))
 
-    ix = ix[:,np.where(ts_sim >= 1600)]
+    ix = ix[:, np.where(ts_sim >= 1600)]
     ix = np.reshape(ix, (ix.shape[0], ix.shape[2]))
 
     icap = A['icap']
-    icap = icap[:,np.where(ts_sim >= 1600)]
+    icap = icap[:, np.where(ts_sim >= 1600)]
     icap = np.reshape(icap, (icap.shape[0], icap.shape[2]))
 
     imemb = A['imemb']
-    imemb = imemb[:,np.where(ts_sim >= 1600)]
+    imemb = imemb[:, np.where(ts_sim >= 1600)]
     imemb = np.reshape(imemb, (imemb.shape[0], imemb.shape[2]))
 
-    isyn = isyn[:,np.where(ts_sim >= 1600)]
+    isyn = isyn[:, np.where(ts_sim >= 1600)]
     isyn = np.reshape(isyn, (isyn.shape[0], isyn.shape[2]))
 
     list_t.append(ts_sim2)
@@ -96,16 +96,16 @@ y = y*1e-6  # meters
 z = z*1e-6  # meters
 
 B = {
-    'times' : times,
-    'ina'   : ina,
-    'ik'    : ik,
-    'ica'   : ica,
-    'ix'    : ix,
-    'imemb' : imemb,
-    'icap'  : icap,
-    'x' : x,
-    'y' : y,
-    'z' : z,
+    'times': times,
+    'ina': ina,
+    'ik': ik,
+    'ica': ica,
+    'ix': ix,
+    'imemb': imemb,
+    'icap': icap,
+    'x': x,
+    'y': y,
+    'z': z,
 }
 
 folder_name = 'simulation_data/neuron_' + str(iseed)

@@ -18,11 +18,10 @@ template_file = "models/L5PCtemplate.hoc"
 v0 = -80
 ca0 = 0.0001
 
-synlambda = 5.0 # frequency of synaptic inputs (Hz)
-syntau = 2.0    # decay time (ms)
+synlambda = 5.0  # frequency of synaptic inputs (Hz)
+syntau = 2.0     # decay time (ms)
 proximalpoint = 400
 distalpoint = 620
-#distalpoint = 960
 BACdt = 5.0
 
 nsegs = 20
@@ -36,17 +35,6 @@ singleSimT = 200
 
 Nsims = int(1.0*tstop/singleSimT + 0.9999)
 dtsave = 0.1
-
-# If the simulation is already done, exit
-if path.exists(path.join('simulation_data', 'seed_' + str(myseed),
-                         'currsums_sections_' + str(Nsynlocs) +
-                         'areagsynsmediumtau_fixeddt_type' + str(synloctype) +
-                         '_amp' + str(syngmax) + '_tstop' + str(tstop) +
-                         '_nseg' + str(nsegs) + '_dt' + str(dt) + '_seed' +
-                         str(myseed) + '_sim' + str(Nsims-1) + 'x' +
-                         str(singleSimT) + '.mat')):
-    print("The simulation has already been performed")
-    sys.exit(0)
 
 # Initialize the model
 h("""
@@ -124,7 +112,8 @@ all_nsegs = apical_nsegs + basal_nsegs + somatic_nsegs + axonal_nsegs
 tmp_dict = dict(nsegs=nsegs, axonal_nsec_nsegs=axonal_nsec*nsegs,
                 apical_nsec_nsegs=apical_nsec*nsegs,
                 basal_nsec_nsegs=basal_nsec*nsegs,
-                axonal_nsec_nsegs=axonal_nsec*nsegs))
+                axonal_nsec_nsegs=axonal_nsec*nsegs)
+
 h("""objref apicalina[{apical_nsec_nsegs}], \
 apicalik[{apical_nsec_nsegs}], \
 apicalica[{apical_nsec_nsegs}], \
@@ -149,10 +138,10 @@ somaticimemb[{nsegs}]
 objref axonalil[{axonal_nsec_nsegs}], \
 axonalv[{axonal_nsec_nsegs}], \
 axonalicap[{axonal_nsec_nsegs}], \
-axonalimemb[{axonal_nsec_nsegs}]""".format(**tmp_dict)
+axonalimemb[{axonal_nsec_nsegs}]""".format(**tmp_dict))
 
 # Initialize the segment areas
-print "objref complete"
+print("objref complete")
 A_apical = zeros(apical_nsegs)
 A_basal = zeros(basal_nsegs)
 A_somatic = zeros(somatic_nsegs)
@@ -178,7 +167,8 @@ x_axonal = zeros(axonal_nsec)
 y_axonal = zeros(axonal_nsec)
 z_axonal = zeros(axonal_nsec)
 
-# Set the recordings for the compartments in the apical dendrite. Calculate also the membrane areas of each segment
+# Set the recordings for the compartments in the apical dendrite.
+# Calculate also the membrane areas of each segment
 for i in range(apical_nsec):
     h("access L5PC.apic[" + str(i) + "]")
     h("tmpvarx = x3d(0)")
@@ -187,9 +177,9 @@ for i in range(apical_nsec):
     h("tmpvarx2 = x3d(n3d()-1)")
     h("tmpvary2 = y3d(n3d()-1)")
     h("tmpvarz2 = z3d(n3d()-1)")
-    coord1 = [h.tmpvarx,h.tmpvary,h.tmpvarz]
-    coord2 = [h.tmpvarx2,h.tmpvary2,h.tmpvarz2]
-    thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+    coord1 = [h.tmpvarx, h.tmpvary, h.tmpvarz]
+    coord2 = [h.tmpvarx2, h.tmpvary2, h.tmpvarz2]
+    thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
     x_apical[i] = thispos3d[0]
     y_apical[i] = thispos3d[1]
     z_apical[i] = thispos3d[2]
@@ -197,9 +187,9 @@ for i in range(apical_nsec):
     for j in range(nsegs):
         thispos = 0.5/nsegs + 1.0/nsegs*j
         if nsegs == 1:
-            thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+            thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
         else:
-            thispos3d = [x + j*(y-x)/(nsegs-1) for x,y in zip(coord1,coord2)]
+            thispos3d = [x + j*(y-x)/(nsegs-1) for x, y in zip(coord1, coord2)]
 
         nsegs_str = str(i*nsegs + j)
         h("{apicalina[" + nsegs_str + "] = new Vector()}")
@@ -212,14 +202,22 @@ for i in range(apical_nsec):
         h("{apicalimemb[" + nsegs_str + "] = new Vector()}")
         h("L5PC.apic[" + str(i) + "] insert extracellular")
         h("access L5PC.apic[" + str(i) + "]")
-        h("{apicalina[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].ina(" + str(thispos) + "),dtsave)}")
-        h("{apicalik[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].ik(" + str(thispos) + "),dtsave)}")
-        h("{apicalica[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].ica(" + str(thispos) + "),dtsave)}")
-        h("{apicalih[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
-        h("{apicalil[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].i_pas(" + str(thispos) + "),dtsave)}")
-        h("{apicalv[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].v(" + str(thispos) + "),dtsave)}")
-        h("{apicalicap[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].i_cap(" + str(thispos) + "),dtsave)}")
-        h("{apicalimemb[" + nsegs_str + "].record(&L5PC.apic[" + str(i) + "].i_membrane(" + str(thispos) + "),dtsave)}")
+        h("{apicalina[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].ina(" + str(thispos) + "),dtsave)}")
+        h("{apicalik[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].ik(" + str(thispos) + "),dtsave)}")
+        h("{apicalica[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].ica(" + str(thispos) + "),dtsave)}")
+        h("{apicalih[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
+        h("{apicalil[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].i_pas(" + str(thispos) + "),dtsave)}")
+        h("{apicalv[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].v(" + str(thispos) + "),dtsave)}")
+        h("{apicalicap[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].i_cap(" + str(thispos) + "),dtsave)}")
+        h("{apicalimemb[" + nsegs_str + "].record(&L5PC.apic[" + str(i) +
+            "].i_membrane(" + str(thispos) + "),dtsave)}")
         h("L5PC.apic[" + str(i) + "].nseg = " + str(nsegs))
         h("tmpvar = area(" + str(thispos) + ")")
         A_apical[i*nsegs + j] = h.tmpvar
@@ -227,7 +225,8 @@ for i in range(apical_nsec):
 
 print("apical complete")
 
-# Set the recordings for the compartments in the basal dendrite. Calculate also the membrane areas of each segment
+# Set the recordings for the compartments in the basal dendrite.
+# Calculate also the membrane areas of each segment
 for i in range(basal_nsec):
     h("access L5PC.dend[" + str(i) + "]")
     h("tmpvarx = x3d(0)")
@@ -236,10 +235,10 @@ for i in range(basal_nsec):
     h("tmpvarx2 = x3d(n3d()-1)")
     h("tmpvary2 = y3d(n3d()-1)")
     h("tmpvarz2 = z3d(n3d()-1)")
-    coord1 = [h.tmpvarx,h.tmpvary,h.tmpvarz]
-    coord2 = [h.tmpvarx2,h.tmpvary2,h.tmpvarz2]
+    coord1 = [h.tmpvarx, h.tmpvary, h.tmpvarz]
+    coord2 = [h.tmpvarx2, h.tmpvary2, h.tmpvarz2]
 
-    thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+    thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
 
     x_basal[i] = thispos3d[0]
     y_basal[i] = thispos3d[1]
@@ -248,9 +247,9 @@ for i in range(basal_nsec):
     for j in range(nsegs):
         thispos = 0.5/nsegs + 1.0/nsegs*j
         if nsegs == 1:
-            thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+            thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
         else:
-            thispos3d = [x + j*(y-x)/(nsegs-1) for x,y in zip(coord1,coord2)]
+            thispos3d = [x + j*(y-x)/(nsegs-1) for x, y in zip(coord1, coord2)]
 
         nsegs_str = str(i*nsegs + j)
         h("{basalih[" + nsegs_str + "] = new Vector()}")
@@ -260,19 +259,25 @@ for i in range(basal_nsec):
         h("{basalimemb[" + nsegs_str + "] = new Vector()}")
         h("L5PC.dend[" + str(i) + "] insert extracellular")
         h("access L5PC.dend[" + str(i) + "]")
-        h("{basalih[" + nsegs_str + "].record(&L5PC.dend[" + str(i) + "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
-        h("{basalil[" + nsegs_str + "].record(&L5PC.dend[" + str(i) + "].i_pas(" + str(thispos) + "),dtsave)}")
-        h("{basalv[" + nsegs_str + "].record(&L5PC.dend[" + str(i) + "].v(" + str(thispos) + "),dtsave)}")
-        h("{basalicap[" + nsegs_str + "].record(&L5PC.dend[" + str(i) + "].i_cap(" + str(thispos) + "),dtsave)}")
-        h("{basalimemb[" + nsegs_str + "].record(&L5PC.dend[" + str(i) + "].i_membrane(" + str(thispos) + "),dtsave)}")
-        h("L5PC.dend[" + str(i) + "].nseg = "  +  str(nsegs))
+        h("{basalih[" + nsegs_str + "].record(&L5PC.dend[" + str(i) +
+            "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
+        h("{basalil[" + nsegs_str + "].record(&L5PC.dend[" + str(i) +
+            "].i_pas(" + str(thispos) + "),dtsave)}")
+        h("{basalv[" + nsegs_str + "].record(&L5PC.dend[" + str(i) +
+            "].v(" + str(thispos) + "),dtsave)}")
+        h("{basalicap[" + nsegs_str + "].record(&L5PC.dend[" + str(i) +
+            "].i_cap(" + str(thispos) + "),dtsave)}")
+        h("{basalimemb[" + nsegs_str + "].record(&L5PC.dend[" + str(i) +
+            "].i_membrane(" + str(thispos) + "),dtsave)}")
+        h("L5PC.dend[" + str(i) + "].nseg = " + str(nsegs))
         h("tmpvar = area(" + str(thispos) + ")")
         A_basal[i*nsegs + j] = h.tmpvar
         Asec_basal[i] += A_basal[i*nsegs + j]
 
 print("basal complete")
 
-# Set the recordings for the compartments in the soma. Calculate also the membrane area
+# Set the recordings for the compartments in the soma.
+# Calculate also the membrane area
 for i in range(somatic_nsec):
     h("access L5PC.soma[" + str(i) + "]")
     h("tmpvarx = x3d(0)")
@@ -281,10 +286,10 @@ for i in range(somatic_nsec):
     h("tmpvarx2 = x3d(n3d()-1)")
     h("tmpvary2 = y3d(n3d()-1)")
     h("tmpvarz2 = z3d(n3d()-1)")
-    coord1 = [h.tmpvarx,h.tmpvary,h.tmpvarz]
-    coord2 = [h.tmpvarx2,h.tmpvary2,h.tmpvarz2]
+    coord1 = [h.tmpvarx, h.tmpvary, h.tmpvarz]
+    coord2 = [h.tmpvarx2, h.tmpvary2, h.tmpvarz2]
 
-    thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+    thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
     x_somatic[i] = thispos3d[0]
     y_somatic[i] = thispos3d[1]
     z_somatic[i] = thispos3d[2]
@@ -292,9 +297,9 @@ for i in range(somatic_nsec):
     for j in range(nsegs):
         thispos = 0.5/nsegs + 1.0/nsegs*j
         if nsegs == 1:
-            thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+            thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
         else:
-            thispos3d = [x + j*(y-x)/(nsegs-1) for x,y in zip(coord1,coord2)]
+            thispos3d = [x + j*(y-x)/(nsegs-1) for x, y in zip(coord1, coord2)]
 
         nsegs_str = str(i*nsegs + j)
         h("{somaticina[" + nsegs_str + "] = new Vector()}")
@@ -307,36 +312,45 @@ for i in range(somatic_nsec):
         h("{somaticimemb[" + nsegs_str + "] = new Vector()}")
         h("L5PC.soma[" + str(i) + "] insert extracellular")
         h("access L5PC.soma[" + str(i) + "]")
-        h("{somaticina[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].ina(" + str(thispos) + "),dtsave)}")
-        h("{somaticik[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].ik(" + str(thispos) + "),dtsave)}")
-        h("{somaticica[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].ica(" + str(thispos) + "),dtsave)}")
-        h("{somaticih[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
-        h("{somaticil[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].i_pas(" + str(thispos) + "),dtsave)}")
-        h("{somaticv[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].v(" + str(thispos) + "),dtsave)}")
-        h("{somaticicap[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].i_cap(" + str(thispos) + "),dtsave)}")
-        h("{somaticimemb[" + nsegs_str + "].record(&L5PC.soma[" + str(i) + "].i_membrane(" + str(thispos) + "),dtsave)}")
-        h("L5PC.soma[" + str(i) + "].nseg = "  +  str(nsegs))
+        h("{somaticina[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].ina(" + str(thispos) + "),dtsave)}")
+        h("{somaticik[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].ik(" + str(thispos) + "),dtsave)}")
+        h("{somaticica[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].ica(" + str(thispos) + "),dtsave)}")
+        h("{somaticih[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].ihcn_Ih(" + str(thispos) + "),dtsave)}")
+        h("{somaticil[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].i_pas(" + str(thispos) + "),dtsave)}")
+        h("{somaticv[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].v(" + str(thispos) + "),dtsave)}")
+        h("{somaticicap[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].i_cap(" + str(thispos) + "),dtsave)}")
+        h("{somaticimemb[" + nsegs_str + "].record(&L5PC.soma[" + str(i) +
+            "].i_membrane(" + str(thispos) + "),dtsave)}")
+        h("L5PC.soma[" + str(i) + "].nseg = " + str(nsegs))
         h("tmpvar = area(" + str(thispos) + ")")
         A_somatic[i*nsegs + j] = h.tmpvar
-        Asec_somatic[i]  += A_somatic[i*nsegs + j]
+        Asec_somatic[i] += A_somatic[i*nsegs + j]
 
         if j == nsegs/2:
             somapos3d = thispos3d[:]
 
 print("somatic complete")
 
-# Set the recordings for the compartments in the axon initial segment. Calculate also the membrane areas of each segment
+# Set the recordings for the compartments in the axon initial segment.
+# Calculate also the membrane areas of each segment
 for i in range(axonal_nsec):
-    thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+    thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
     x_axonal[i] = thispos3d[0]
     y_axonal[i] = thispos3d[1]
     z_axonal[i] = thispos3d[2]
 
     for j in range(nsegs):
         if nsegs == 1:
-            thispos3d = [(x + y)/2 for x,y in zip(coord1,coord2)]
+            thispos3d = [(x + y)/2 for x, y in zip(coord1, coord2)]
         else:
-            thispos3d = [x + j*(y-x)/(nsegs-1) for x,y in zip(coord1,coord2)]
+            thispos3d = [x + j*(y-x)/(nsegs-1) for x, y in zip(coord1, coord2)]
 
         nsegs_str = str(i*nsegs + j)
         h("{axonalil[" + nsegs_str + "] = new Vector()}")
@@ -345,11 +359,15 @@ for i in range(axonal_nsec):
         h("{axonalimemb[" + nsegs_str + "] = new Vector()}")
         h("L5PC.axon[" + str(i) + "] insert extracellular")
         h("access L5PC.axon[" + str(i) + "]")
-        h("{axonalil[" + nsegs_str + "].record(&L5PC.axon[" + str(i) + "].i_pas(" + str(thispos) + "),dtsave)}")
-        h("{axonalv[" + nsegs_str + "].record(&L5PC.axon[" + str(i) + "].v(" + str(thispos) +     "),dtsave)}")
-        h("{axonalicap[" + nsegs_str + "].record(&L5PC.axon[" + str(i) + "].i_cap(" + str(thispos) +     "),dtsave)}")
-        h("{axonalimemb[" + nsegs_str + "].record(&L5PC.axon[" + str(i) + "].i_membrane(" + str(thispos) +     "),dtsave)}")
-        h("L5PC.axon[" + str(i) + "].nseg = "  +  str(nsegs))
+        h("{axonalil[" + nsegs_str + "].record(&L5PC.axon[" + str(i) +
+            "].i_pas(" + str(thispos) + "),dtsave)}")
+        h("{axonalv[" + nsegs_str + "].record(&L5PC.axon[" + str(i) +
+            "].v(" + str(thispos) + "),dtsave)}")
+        h("{axonalicap[" + nsegs_str + "].record(&L5PC.axon[" + str(i) +
+            "].i_cap(" + str(thispos) + "),dtsave)}")
+        h("{axonalimemb[" + nsegs_str + "].record(&L5PC.axon[" + str(i) +
+            "].i_membrane(" + str(thispos) + "),dtsave)}")
+        h("L5PC.axon[" + str(i) + "].nseg = " + str(nsegs))
         h("tmpvar = area(" + str(thispos) + ")")
         A_axonal[i*nsegs + j] = h.tmpvar
         Asec_axonal[i] += A_axonal[i*nsegs + j]
@@ -362,11 +380,11 @@ synx = [0.0]*Nsynlocs
 
 # Calculate the probability of synapse being found in the basal dendrite.
 if synloctype == 1:
-  basalprob = 0.0
+    basalprob = 0.0
 if synloctype == 2:
-  basalprob = sum(A_basal)/(sum(A_basal) + sum(A_apical))
+    basalprob = sum(A_basal)/(sum(A_basal) + sum(A_apical))
 if synloctype == 3:
-  basalprob = 1.0
+    basalprob = 1.0
 
 print("Basal area:", str(sum(A_basal)))
 print("Apical area:", str(sum(A_apical)))
@@ -403,7 +421,8 @@ for isyn in range(Nsynlocs):
         synbranch[isyn] = 1
 
     if synbranch[isyn] == 0:
-        seg_syn_accurate[isyn] = next((i for i,x in enumerate(cumps_apical) if x > rs_seg[isyn]))
+        seg_syn_accurate[isyn] = next((i for i, x in enumerate(cumps_apical)
+                                       if x > rs_seg[isyn]))
         seg_syn[isyn] = seg_syn_accurate[isyn]/nsegs
         segnum = seg_syn_accurate[isyn] % nsegs
         h("access L5PC.apic[" + str(seg_syn[isyn]) + "]")
@@ -411,7 +430,8 @@ for isyn in range(Nsynlocs):
         allseg_syn[isyn] = seg_syn_accurate[isyn]
 
     else:
-        seg_syn_accurate[isyn] = next((i for i,x in enumerate(cumps_basal) if x > rs_seg[isyn]))
+        seg_syn_accurate[isyn] = next((i for i, x in enumerate(cumps_basal)
+                                       if x > rs_seg[isyn]))
         #  seg_syn_accurate[isyn]
         seg_syn[isyn] = seg_syn_accurate[isyn]/nsegs
         segnum = seg_syn_accurate[isyn] % nsegs
@@ -433,20 +453,6 @@ for isyn in range(Nsynlocs):
         h("synlist.o[syni].e = 0")
         h("synlist.o[syni].onset = " + str(t))
     ts_syn.append(ts[:])
-
-# print(np.max(seg_syn_accurate))
-# print(np.min(seg_syn_accurate))
-# print(np.max(seg_syn))
-# print(np.min(seg_syn))
-# print(np.min(allseg_syn))
-# print("allseg max ",)
-# print(np.max(allseg_syn))
-# print(allseg_syn[0])
-# print(np.size(np.array(allseg_syn)))
-# print(np.array(allseg_syn).shape)
-# print(all_nsegs)
-# print(apical_nsegs)
-# print(basal_nsegs)
 
 Nsyns = h.syni + 1
 
@@ -509,15 +515,15 @@ for isim in range(Nsims):
     h("continuerun(" + str(tfin) + ")")
     print "Run " + str(isim) + " complete, tfin = " + str(tfin)
 
-    Vsoma=np.array(h.vsoma)
-    Vdend=np.array(h.vdend)
-    Casoma=np.array(h.casoma)
-    Cadend=np.array(h.cadend)
-    times=np.array([tfin-singleSimT + dtsave*i for i in range(len(Vsoma))])
+    Vsoma = np.array(h.vsoma)
+    Vdend = np.array(h.vdend)
+    Casoma = np.array(h.casoma)
+    Cadend = np.array(h.cadend)
+    times = np.array([tfin-singleSimT + dtsave*i for i in range(len(Vsoma))])
 
     ina = zeros([all_nsec, len(times)])
     ik = zeros([all_nsec, len(times)])
-    ica  = zeros([all_nsec, len(times)])
+    ica = zeros([all_nsec, len(times)])
     ih = zeros([all_nsec, len(times)])
     il = zeros([all_nsec, len(times)])
     v = zeros([all_nsec, len(times)])
@@ -528,21 +534,25 @@ for isim in range(Nsims):
     y = zeros(all_nsec)
     z = zeros(all_nsec)
 
-    a =  np.array(h.apicalina[i])
+    a = np.array(h.apicalina[i])
     print a.shape
 
     k = 0
 
     for i in range(apical_nsec):
         for j in range(nsegs):
-            ina[k,:] += np.array(h.apicalina[i*nsegs + j])*A_apical[i*nsegs + j]
-            ik[k,:] += np.array(h.apicalik[i*nsegs + j])*A_apical[i*nsegs + j]
-            ica[k,:] += np.array(h.apicalica[i*nsegs + j])*A_apical[i*nsegs + j]
-            ih[k,:] += np.array(h.apicalih[i*nsegs + j])*A_apical[i*nsegs + j]
-            il[k,:] += np.array(h.apicalil[i*nsegs + j])*A_apical[i*nsegs + j]
-            v[k,:] += np.array(h.apicalv[i*nsegs + j])*A_apical[i*nsegs + j]
-            icap[k,:] += np.array(h.apicalicap[i*nsegs + j])*A_apical[i*nsegs + j]
-            imemb[k,:] += np.array(h.apicalimemb[i*nsegs + j])*A_apical[i*nsegs + j]
+            ina[k, :] += np.array(h.apicalina[i*nsegs + j])*A_apical[i*nsegs +
+                                                                     j]
+            ik[k, :] += np.array(h.apicalik[i*nsegs + j])*A_apical[i*nsegs + j]
+            ica[k, :] += np.array(h.apicalica[i*nsegs + j])*A_apical[i*nsegs +
+                                                                     j]
+            ih[k, :] += np.array(h.apicalih[i*nsegs + j])*A_apical[i*nsegs + j]
+            il[k, :] += np.array(h.apicalil[i*nsegs + j])*A_apical[i*nsegs + j]
+            v[k, :] += np.array(h.apicalv[i*nsegs + j])*A_apical[i*nsegs + j]
+            icap[k, :] += np.array(h.apicalicap[i*nsegs +
+                                                j])*A_apical[i*nsegs + j]
+            imemb[k, :] += np.array(h.apicalimemb[i*nsegs +
+                                                  j])*A_apical[i*nsegs + j]
         A[k] = A_apical[i]
         x[k] = x_apical[i]
         y[k] = y_apical[i]
@@ -551,11 +561,13 @@ for isim in range(Nsims):
 
     for i in range(basal_nsec):
         for j in range(nsegs):
-            ih[k,:] += np.array(h.basalih[i*nsegs + j])*A_basal[i*nsegs + j]
-            il[k,:] += np.array(h.basalil[i*nsegs + j])*A_basal[i*nsegs + j]
-            v[k,:] += np.array(h.basalv[i*nsegs + j])*A_basal[i*nsegs + j]
-            icap[k,:] += np.array(h.basalicap[i*nsegs + j])*A_basal[i*nsegs + j]
-            imemb[k,:] += np.array(h.basalimemb[i*nsegs + j])*A_basal[i*nsegs + j]
+            ih[k, :] += np.array(h.basalih[i*nsegs + j])*A_basal[i*nsegs + j]
+            il[k, :] += np.array(h.basalil[i*nsegs + j])*A_basal[i*nsegs + j]
+            v[k, :] += np.array(h.basalv[i*nsegs + j])*A_basal[i*nsegs + j]
+            icap[k, :] += np.array(h.basalicap[i*nsegs +
+                                               j])*A_basal[i*nsegs + j]
+            imemb[k, :] += np.array(h.basalimemb[i*nsegs +
+                                                 j])*A_basal[i*nsegs + j]
         A[k] = A_basal[i]
         x[k] = x_basal[i]
         y[k] = y_basal[i]
@@ -564,14 +576,22 @@ for isim in range(Nsims):
 
     for i in range(somatic_nsec):
         for j in range(nsegs):
-            ina[k,:] += np.array(h.somaticina[i*nsegs + j])*A_somatic[i*nsegs + j]
-            ik[k,:] += np.array(h.somaticik[i*nsegs + j])*A_somatic[i*nsegs + j]
-            ica[k,:] += np.array(h.somaticica[i*nsegs + j])*A_somatic[i*nsegs + j]
-            ih[k,:] += np.array(h.somaticih[i*nsegs + j])*A_somatic[i*nsegs + j]
-            il[k,:] += np.array(h.somaticil[i*nsegs + j])*A_somatic[i*nsegs + j]
-            v[k,:] += np.array(h.somaticv[i*nsegs + j])*A_somatic[i*nsegs + j]
-            icap[k,:] += np.array(h.somaticicap[i*nsegs + j])*A_somatic[i*nsegs + j]
-            imemb[k,:] += np.array(h.somaticimemb[i*nsegs + j])*A_somatic[i*nsegs + j]
+            ina[k, :] += np.array(h.somaticina[i*nsegs +
+                                               j])*A_somatic[i*nsegs + j]
+            ik[k, :] += np.array(h.somaticik[i*nsegs +
+                                             j])*A_somatic[i*nsegs + j]
+            ica[k, :] += np.array(h.somaticica[i*nsegs +
+                                               j])*A_somatic[i*nsegs + j]
+            ih[k, :] += np.array(h.somaticih[i*nsegs +
+                                             j])*A_somatic[i*nsegs + j]
+            il[k, :] += np.array(h.somaticil[i*nsegs +
+                                             j])*A_somatic[i*nsegs + j]
+            v[k, :] += np.array(h.somaticv[i*nsegs +
+                                           j])*A_somatic[i*nsegs + j]
+            icap[k, :] += np.array(h.somaticicap[i*nsegs +
+                                                 j])*A_somatic[i*nsegs + j]
+            imemb[k, :] += np.array(h.somaticimemb[i*nsegs +
+                                                   j])*A_somatic[i*nsegs + j]
         A[k] = A_somatic[i]
         x[k] = x_somatic[i]
         y[k] = y_somatic[i]
@@ -580,10 +600,12 @@ for isim in range(Nsims):
 
     for i in range(axonal_nsec):
         for j in range(nsegs):
-            il[k,:] += np.array(h.axonalil[i*nsegs + j])*A_axonal[i*nsegs + j]
-            v[k,:] += np.array(h.axonalv[i*nsegs + j])*A_axonal[i*nsegs + j]
-            icap[k,:] += np.array(h.axonalicap[i*nsegs + j])*A_axonal[i*nsegs + j]
-            imemb[k,:] += np.array(h.axonalimemb[i*nsegs + j])*A_axonal[i*nsegs + j]
+            il[k, :] += np.array(h.axonalil[i*nsegs + j])*A_axonal[i*nsegs + j]
+            v[k, :] += np.array(h.axonalv[i*nsegs + j])*A_axonal[i*nsegs + j]
+            icap[k, :] += np.array(h.axonalicap[i*nsegs +
+                                                j])*A_axonal[i*nsegs + j]
+            imemb[k, :] += np.array(h.axonalimemb[i*nsegs +
+                                                  j])*A_axonal[i*nsegs + j]
         A[k] = A_axonal[i]
         x[k] = x_axonal[i]
         y[k] = y_axonal[i]

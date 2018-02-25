@@ -28,7 +28,26 @@ times = []
 for isim in range(Nsims):
     print('isim=', isim)
     print('Loading isim= ', isim, ', myseed=', myseed)
-    A = scipy.io.loadmat('simulation_data/seed_' + str(myseed) + '/currsums_parts_'+str(Nsynlocs)+'areagsynsmediumtau_fixeddt_type'+str(synloctype)+'_amp'+str(syngmax)+'_tstop'+str(tstop)+'_nseg'+str(nsegs)+'_dt'+str(dt)+'_seed'+str(myseed)+'_sim'+str(isim)+'x'+str(singleSimT)+'.mat')
+    A = scipy.io.loadmat('simulation_data/seed_' +
+                         str(myseed) +
+                         '/currsums_parts_' +
+                         str(Nsynlocs) +
+                         'areagsynsmediumtau_fixeddt_type' +
+                         str(synloctype) +
+                         '_amp' +
+                         str(syngmax) +
+                         '_tstop'+str(tstop) +
+                         '_nseg' +
+                         str(nsegs) +
+                         '_dt' +
+                         str(dt) +
+                         '_seed' +
+                         str(myseed) +
+                         '_sim' +
+                         str(isim) +
+                         'x' +
+                         str(singleSimT) +
+                         '.mat')
 
     print A.keys()
     times.append(A['times'])
@@ -42,7 +61,7 @@ for isim in range(Nsims):
     icap.append(A['icap'])
     Vsoma.append(A['Vsoma'])
 
-    if isim==0:
+    if isim == 0:
         ts_syn = A['ts_syn']
         sec_syn = A['sec_syn']
         x = A['x']
@@ -74,26 +93,26 @@ print(icap.shape)
 print(Vsoma.shape)
 
 B = {
-    'times' : times,
-    'ina'   : ina,
-    'ik'    : ik,
-    'ica'   : ica,
-    'ih'    : ih,
-    'il'    : il,
-    'VtimesA' : VtimesA,
-    'imemb' : imemb,
-    'icap'  : icap,
-    'Vsoma' : Vsoma,
-    'ts_syn' : ts_syn,
-    'sec_syn' : sec_syn,
-    'x' : x,
-    'y' : y,
-    'z' : z,
-    'area' : area
+    'times': times,
+    'ina': ina,
+    'ik': ik,
+    'ica': ica,
+    'ih': ih,
+    'il': il,
+    'VtimesA': VtimesA,
+    'imemb': imemb,
+    'icap': icap,
+    'Vsoma': Vsoma,
+    'ts_syn': ts_syn,
+    'sec_syn': sec_syn,
+    'x': x,
+    'y': y,
+    'z': z,
+    'area': area
 }
 
-scipy.io.savemat('simulation_data/currsums_parts_' + str(Nsynlocs) + 'areagsynsmediumtau_fixeddt_type' + str(synloctype) + '_amp' + str(syngmax) + '_tstop' + str(tstop) + \
-    '.0_nseg' + str(nsegs) + '_dt' + str(dt) + '_seed' + str(myseed) + '_comb200.0.mat', B);
-
-
-# scipy.io.loadmat('simulation_data/seed_' + str(myseed) + '/currsums_parts_'+str(Nsynlocs)+'areagsynsmediumtau_fixeddt_type'+str(synloctype)+'_amp'+str(syngmax)+'_tstop'+str(tstop)+'_nseg'+str(nsegs)+'_dt'+str(dt)+'_seed'+str(myseed)+'_sim'+str(isim)+'x'+str(singleSimT)+'.mat', dict)
+scipy.io.savemat('simulation_data/currsums_parts_' + str(Nsynlocs) +
+                 'areagsynsmediumtau_fixeddt_type' + str(synloctype) +
+                 '_amp' + str(syngmax) + '_tstop' + str(tstop) +
+                 '.0_nseg' + str(nsegs) + '_dt' + str(dt) + '_seed' +
+                 str(myseed) + '_comb200.0.mat', B)
