@@ -39,8 +39,10 @@ def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
 
     # Include ion species
     if not modified:
-        ion_Na = Ion(simulator, z_Na, D_Na, init_cond, init_cond, boundary, "Na")
-        ion_Cl = Ion(simulator, z_Cl, D_Cl, init_cond, init_cond, boundary, "Cl")
+        ion_Na = Ion(simulator, z_Na, D_Na, init_cond, init_cond, boundary,
+                     "Na")
+        ion_Cl = Ion(simulator, z_Cl, D_Cl, init_cond, init_cond, boundary,
+                     "Cl")
     else:
         ion_X = Ion(simulator, z_X, D_X, init_cond, init_cond, boundary, "X")
 
@@ -65,8 +67,8 @@ def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
     zoom = "zoom" if zoom else "long"
     fname = solver.lower() + "_" + zoom + ".h5"
     fname = fname if not modified else "modified_diffusion.h5"
-    notes = "This simulation considers a step concentration profile in 1D, solved" + \
-            " with %s." % solver.replace("_", " ")
+    notes = "This simulation considers a step concentration profile in 1D," + \
+        " solved with %s." % solver.replace("_", " ")
 
     state_saver = State_saver(fname, simulator, notes)
 

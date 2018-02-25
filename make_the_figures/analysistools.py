@@ -39,20 +39,25 @@ class AnalysisTools:
         # self.dim = self.mesh.geometry().dim()
         # element_types = [interval, triangle, tetrahedron]
         # element = element_types[self.dim-1]
+        self.dim = self.mesh.geometry().dim()
 
-        self.V = FunctionSpace(self.mesh, "CG", 1)
-        self.R = FunctionSpace(self.mesh, "R", 0)
+        self.element_type_list = [interval, triangle, tetrahedron]
+        self.P1 = FiniteElement("P", self.element_type_list[self.dim-1],
+                                order)
+        self.R0 = FiniteElement('R', self.element_type_list[self.dim-1], 0)
+        self.V = FunctionSpace(self.mesh, self.P1)
+        self.R = FunctionSpace(self.mesh, self.R0)
 
-        # Function spaces for concentrations:
-        function_space_list = [self.V]*(self.N)
+        # Create mixed element
+        element_list = []
+        for i in range(self.N+2):
+            element_list.append(self.P1)
 
-        # Function spaces for potential:
-        function_space_list.extend([self.V,self.V])
+        for i in range(2):
+            element_list.append(self.R0)
 
-        # Function spaces for potential point sources:
-        function_space_list.extend([self.R,self.R])
-
-        self.W = MixedFunctionSpace(function_space_list)
+        TH = MixedElement(element_list)
+        self.W = FunctionSpace(self.mesh, TH)
 
         self.attributes = self.hdf.attributes('attributes')
         self.vertex_to_dof_map = vertex_to_dof_map(self.V)
