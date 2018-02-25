@@ -6,12 +6,20 @@ import scipy.io
 from pylab import *
 import time
 import sys
+import os
 from os import path
-from os import mkdir
 
 myseed = int(sys.argv[1])
 seed(myseed)
-mkdir('simulation_data/seed_' + str(myseed) + '/')
+
+directory = 'simulation_data'
+if not os.path.exists(directory):
+    os.mkdir(directory)
+
+directory = 'simulation_data/seed_' + str(myseed)
+if not os.path.exists(directory):
+    os.mkdir(directory)
+
 
 morphology_file = "morphologies/cell1.asc"
 biophys_file = "models/L5PCbiophys3.hoc"
