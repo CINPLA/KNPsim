@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/CINPLA/KNPsim.svg?token=CMEYLVk7cYLKvFcNYS19&branch=master)](https://travis-ci.com/CINPLA/KNPsim)
+[![Build Status](https://travis-ci.org/CINPLA/KNPsim.svg?branch=master)](https://travis-ci.org/CINPLA/KNPsim)
 
 ## KNPsim
 KNPsim is a implementation of the KNP framework (see Halnes et al., https://www.ncbi.nlm.nih.gov/pubmed/27820827), using the FEniCS software for finite element problems.
