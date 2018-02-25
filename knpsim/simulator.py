@@ -150,7 +150,8 @@ class Simulator:
 
         # This should never happen:
         if self.potential.bc is not None:
-            print("Why are you setting a dirichlet BC for the potential??")
+            if MPI.rank(mpi_comm_world()) == 0:
+                print("Why are you setting a dirichlet BC for the potential??")
             self.bcs.append(DirichletBC(self.geometry.W.sub(self.N),
                                         self.potential.bc, "on_boundary"))
 

@@ -20,7 +20,8 @@ y_coor = mesh.coordinates()[:,1]
 ymin = y_coor.min()
 ymax = y_coor.max()
 
-print "loaded mesh and made spaces!"
+if MPI.rank(mpi_comm_world()) == 0:
+    print("Loaded mesh and create function spaces!")
 
 def boundary(x, on_boundary):
     return on_boundary
@@ -83,8 +84,9 @@ for i in range(n_points):
     def cap_current(t, space_idx=i, icap=icap):
         time_idx = int(t/1e-4)
         time_stop_idx = int((t + dt)/1e-4)
-        print "icap start", time_idx
-        print "icap stop", time_stop_idx
+        if MPI.rank(mpi_comm_world()) == 0:
+            print "icap start", time_idx
+            print "icap stop", time_stop_idx
         cc = np.mean(icap[space_idx, time_idx:time_stop_idx+1])
         return cc
 
@@ -95,8 +97,9 @@ for i in range(n_points):
         def ion_current(t, idx=idx, space_idx=i, ion_current_array=ion_current_array, ion=ion):
             time_idx = int(simulator.time_solver.t/1e-4)
             time_stop_idx = int((t + dt)/1e-4)
-            print ion.name, time_idx
-            print ion.name, time_stop_idx
+            if MPI.rank(mpi_comm_world()) == 0:
+                print ion.name, time_idx
+                print ion.name, time_stop_idx
             cc = np.mean(ion_current_array[space_idx, time_idx:time_stop_idx+1])
             # print cc
             return cc

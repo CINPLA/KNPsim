@@ -1,5 +1,6 @@
 import sys
-from dolfin import Function, Constant, interpolate, inner, nabla_grad, dx
+from dolfin import (Function, Constant, interpolate, inner, nabla_grad, dx,
+                    FacetNormal, ds)
 
 
 class Error(Exception):
@@ -113,8 +114,7 @@ class PoissonPotential(Potential):
             b += ion.z*ion.D*ion.c
 
         # boundary condition
-        g = inner(nabla_grad(b)/sigma,
-                  FacetNormal(self.simulator.geometry.mesh))
+        g = inner(nabla_grad(b)/sigma, FacetNormal(self.simulator.geometry.mesh))
 
         # gather constants
         F = Constant(self.simulator.F)
