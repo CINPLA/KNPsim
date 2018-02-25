@@ -113,8 +113,7 @@ all_nsegs = apical_nsegs + basal_nsegs + somatic_nsegs + axonal_nsegs
 
 tmp_dict = dict(nsegs=nsegs, axonal_nsec_nsegs=axonal_nsec*nsegs,
                 apical_nsec_nsegs=apical_nsec*nsegs,
-                basal_nsec_nsegs=basal_nsec*nsegs,
-                axonal_nsec_nsegs=axonal_nsec*nsegs)
+                basal_nsec_nsegs=basal_nsec*nsegs)
 
 h("""objref apicalina[{apical_nsec_nsegs}], \
 apicalik[{apical_nsec_nsegs}], \
