@@ -1,3 +1,5 @@
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from neuron import h
 import numpy as np
 import scipy.io
@@ -443,7 +445,6 @@ for isyn in range(Nsynlocs):
     t = 0
     secx = 1.0*segnum/nsegs + 1.0/nsegs*rs_x[isyn]
     while t < tstop:
-        # print t
         t = t - 1000.0/synlambda*log(1-rand())
         ts.append(t)
         h("{synlist.append(new AlphaSynapse(" + str(secx) + "))}")
@@ -511,9 +512,9 @@ for isim in range(Nsims):
         h("{axonalimemb[" + str(i) + "].resize(0)}")
 
     tfin = tfin + singleSimT
-    print "Starting run "+str(isim) + " until " + str(tfin) + " ms"
+    print("Starting run " + str(isim) + " until " + str(tfin) + " ms")
     h("continuerun(" + str(tfin) + ")")
-    print "Run " + str(isim) + " complete, tfin = " + str(tfin)
+    print("Run " + str(isim) + " complete, tfin = " + str(tfin))
 
     Vsoma = np.array(h.vsoma)
     Vdend = np.array(h.vdend)
@@ -535,10 +536,7 @@ for isim in range(Nsims):
     z = zeros(all_nsec)
 
     a = np.array(h.apicalina[i])
-    print a.shape
-
     k = 0
-
     for i in range(apical_nsec):
         for j in range(nsegs):
             ina[k, :] += np.array(h.apicalina[i*nsegs + j])*A_apical[i*nsegs +

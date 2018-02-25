@@ -7,7 +7,7 @@ KNP is a framework for solving ion concentration dynamics by assuming the Nernst
 # Installation
 Work in progress:
 ```
-conda create -n knpsim -c conda-forge fenics ipython h5py matplotlib python=3
+conda create -n knpsim -c conda-forge fenics ipython h5py matplotlib scipy python=3
 source activate knpsim
 python setup.py install
 ```
