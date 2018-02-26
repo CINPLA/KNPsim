@@ -3,7 +3,7 @@ from mshr import *
 import scipy.io
 import numpy as np
 
-data = scipy.io.loadmat('revdata_100fold.mat')
+data = scipy.io.loadmat('neuron_input_1.hdf5')
 
 if MPI.rank(mpi_comm_world()) == 0:
     print(data.keys())
