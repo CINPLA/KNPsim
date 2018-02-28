@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import os
 import h5py
+import scipy
 
 iseed = int(sys.argv[1])
 
@@ -118,4 +119,3 @@ for key, value in B.items():
     h.create_dataset(key, data=value)
 
 h.close()
-scipy.io.savemat(filename, B)
