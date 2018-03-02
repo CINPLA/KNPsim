@@ -81,7 +81,8 @@ class Time_solver:
                       self.simulator.u_new, self.simulator.u_res,
                       bcs=self.simulator.bcs, deltas=pointsources,
                       max_iter=self.max_iter, atol=self.atol, rtol=self.rtol,
-                      relax=self.relax, report_convergence=self.report_convergence)
+                      relax=self.relax,
+                      report_convergence=self.report_convergence)
 
         # alternative, use FEniCS solver (does not work with point sources)
         # solve(self.simulator.form==0, self.simulator.u_new,
@@ -90,7 +91,8 @@ class Time_solver:
         # Update old solution
         assign(self.simulator.u, self.simulator.u_new)
         if MPI.rank(mpi_comm_world()) == 0:
-            print("Solved for the time {:02.03e} in simulation.".format(self.t))
+            print("Solved for the time {:02.03e} in simulation."
+                  .format(self.t))
         self.t += self.dt
 
         # Call live_plotter, if it is used
@@ -112,8 +114,8 @@ class Time_solver:
             self.solve_for_time_step()
             sim_t1 = time.clock()
             if MPI.rank(mpi_comm_world()) == 0:
-                print("The time step was solved in {:02.03f} seconds.\n"\
-                        .format(sim_t1 - sim_t0))
+                print("The time step was solved in {:02.03f} seconds.\n"
+                      .format(sim_t1 - sim_t0))
 
         if self.simulator.state_saver:
             self.simulator.state_saver.finalize()

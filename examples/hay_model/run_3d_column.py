@@ -69,10 +69,9 @@ n_points = len(np.transpose(d['x']))
 # ica = d['jca']*simulator.F*ion_Ca.z/factor
 # ik = d['jk']*simulator.F*ion_K.z/factor
 # icap = d['icap']/factor
-x = d['x'].reshape(n_points)
-y = d['y'].reshape(n_points)
-z = d['z'].reshape(n_points)
-
+x = np.array(d['x']).reshape(n_points)
+y = np.array(d['y']).reshape(n_points)
+z = np.array(d['z']).reshape(n_points)
 
 current_arrays = ['ica', 'ina', 'ix', 'ik']
 
