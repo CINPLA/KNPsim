@@ -1,31 +1,20 @@
-from dolfin import *
 from knpsim import *
-# import time
-# import numpy as np
-# import os.path
-# import h5py
-
-print("asdsa")
-asdsad
+from dolfin import *
+import time
+import numpy as np
+import os.path
+import h5py
 
 assert os.path.isfile('neuron_input_1.h5'), "neuron data doesn't exist!"
 assert os.path.isfile('mesh_cylinder.hdf5'), "mesh doesn't exist!"
 
-
-
 ECSfrac = 0.2  # Fraction of tissue being extracellular space
 
-
 d = h5py.File('neuron_input_1.h5', 'r')
-
-
 
 mesh = Mesh()
 f = HDF5File(mesh.mpi_comm(), "mesh_cylinder.hdf5", 'r')
 f.read(mesh, 'mesh', False)
-
-
-
 
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
@@ -33,7 +22,6 @@ simulator = Simulator(geometry)
 y_coor = mesh.coordinates()[:, 1]
 ymin = y_coor.min()
 ymax = y_coor.max()
-
 
 if MPI.rank(mpi_comm_world()) == 0:
     print("Loaded mesh and create function spaces!")
@@ -89,8 +77,6 @@ z = d['z'].reshape(n_points)
 current_arrays = ['ica', 'ina', 'ix', 'ik']
 
 dt = 1e-1
-
-
 
 for i in range(n_points):
     p = Point(x[i], y[i], z[i])
