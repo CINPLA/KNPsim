@@ -1,17 +1,31 @@
-from impknp imort *
 from dolfin import *
-import time
-import scipy.io as sio
-import numpy as np
-# parameters['form_compiler']['optimize'] = True
+from knpsim import *
+# import time
+# import numpy as np
+# import os.path
+# import h5py
+
+print("asdsa")
+asdsad
+
+assert os.path.isfile('neuron_input_1.h5'), "neuron data doesn't exist!"
+assert os.path.isfile('mesh_cylinder.hdf5'), "mesh doesn't exist!"
+
+
 
 ECSfrac = 0.2  # Fraction of tissue being extracellular space
 
-d = sio.loadmat('revdata_100fold.mat')
+
+d = h5py.File('neuron_input_1.h5', 'r')
+
+
 
 mesh = Mesh()
-f = HDF5File(mesh.mpi_comm(), "mesh_co.hdf5", 'r')
+f = HDF5File(mesh.mpi_comm(), "mesh_cylinder.hdf5", 'r')
 f.read(mesh, 'mesh', False)
+
+
+
 
 geometry = Geometry(mesh)
 simulator = Simulator(geometry)
@@ -19,6 +33,7 @@ simulator = Simulator(geometry)
 y_coor = mesh.coordinates()[:, 1]
 ymin = y_coor.min()
 ymax = y_coor.max()
+
 
 if MPI.rank(mpi_comm_world()) == 0:
     print("Loaded mesh and create function spaces!")
@@ -58,34 +73,33 @@ init_K = init_cond_K
 c_boundary_K = init_cond_K
 ion_K = Ion(simulator, z_K, D_K, init_K, c_boundary_K, boundary, "K")
 
-factor = ECSfrac*10
+factor = ECSfrac
 
 n_points = len(np.transpose(d['x']))
-ina = d['jna']*simulator.F*ion_Na.z/factor
-icl = d['jx']*simulator.F*ion_Cl.z/factor
-ica = d['jca']*simulator.F*ion_Ca.z/factor
-ik = d['jk']*simulator.F*ion_K.z/factor
-icap = d['icap']/factor
+# ina = d['jna']*simulator.F*ion_Na.z/factor
+# icl = d['jx']*simulator.F*ion_Cl.z/factor
+# ica = d['jca']*simulator.F*ion_Ca.z/factor
+# ik = d['jk']*simulator.F*ion_K.z/factor
+# icap = d['icap']/factor
 x = d['x'].reshape(n_points)
 y = d['y'].reshape(n_points)
 z = d['z'].reshape(n_points)
 
-i_ion = ion_Na.z*ina + ion_K.z*ik + ion_Ca.z*ica + ion_Cl.z*icl
-current_arrays = [ica, ina, icl, ik]
+
+current_arrays = ['ica', 'ina', 'ix', 'ik']
 
 dt = 1e-1
+
+
 
 for i in range(n_points):
     p = Point(x[i], y[i], z[i])
     currents = []
 
-    def cap_current(t, space_idx=i, icap=icap):
+    def cap_current(t, space_idx=i, icap=d['icap']):
         time_idx = int(t/1e-4)
         time_stop_idx = int((t + dt)/1e-4)
-        if MPI.rank(mpi_comm_world()) == 0:
-            print "icap start", time_idx
-            print "icap stop", time_stop_idx
-        cc = np.mean(icap[space_idx, time_idx:time_stop_idx+1])
+        cc = np.mean(icap[space_idx, time_idx:time_stop_idx+1])/ECSfrac
         return cc
 
     currents.append(Current(cap_current))
@@ -93,29 +107,27 @@ for i in range(n_points):
         ion_current_array = current_arrays[idx]
 
         def ion_current(t, idx=idx, space_idx=i,
-                        ion_current_array=ion_current_array, ion=ion):
-            time_idx = int(simulator.time_solver.t/1e-4)
+                        ion_current_array=d[current_arrays[idx]], ion=ion):
+            time_idx = int(t/1e-4)
             time_stop_idx = int((t + dt)/1e-4)
-            if MPI.rank(mpi_comm_world()) == 0:
-                print ion.name, time_idx
-                print ion.name, time_stop_idx
             cc = np.mean(ion_current_array[space_idx,
-                                           time_idx:(time_stop_idx + 1)])
-            # print cc
+                                           time_idx:time_stop_idx+1])/ECSfrac
             return cc
 
         currents.append(Current(ion_current, ion))
     delta = Delta(p, currents)
     simulator.add_point_source(delta)
 
-time_solver = Time_solver(simulator, dt, theta=1, t_start=8.1, t_stop=9.9)
+time_solver = Time_solver(simulator, dt, t_start=0, t_stop=80)
+
 
 potential = KirchoffPotential(simulator)
+
 
 simulator.initialize_simulator()
 
 
-fname = "/media/andreavs/datadrive/knp_sims_SI/hay_model/knp_3.h5"
+fname = "knp_column_neuron.h5"
 notes = "This simulation considers Hay model neuron in a cylindrical " + \
         "column, using knp"
 state_saver = State_saver(fname, simulator, notes)

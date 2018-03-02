@@ -1,9 +1,11 @@
 import neuron
 import pylab as plt
 import LFPy
+import scipy.io
+
 
 cell_parameters = {
-    'morphology' : 'neuron_model/morphologies/cell1.asc',
+    'morphology': 'neuron_model/morphologies/cell1.asc',
     # 'delete_sections' : [False]
 }
 
@@ -26,7 +28,6 @@ plt.show()
 #
 # N = cell.totnsegs
 
-import scipy.io
 
 savedict = {
     'xstart': cell.xstart,
