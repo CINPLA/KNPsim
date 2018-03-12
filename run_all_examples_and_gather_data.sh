@@ -1,3 +1,4 @@
+mkdir make_the_figures/data
 cd examples/step_concentration
 sh run_application_1.sh
 mv *.h5 ../../make_the_figures/data
