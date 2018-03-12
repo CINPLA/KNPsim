@@ -83,7 +83,7 @@ class State_saver(object):
             grp.attrs['n_procs'] = n_procs
             grp.attrs['simtime'] = simtime
             grp = f.create_group("FunctionSpace")
-            grp.attrs['space'] = self.simulator.geometry.space
+            grp.attrs['element'] = self.simulator.geometry.element
             grp.attrs['order'] = self.simulator.geometry.order
             dset_time = f.create_dataset(
                 "time",
