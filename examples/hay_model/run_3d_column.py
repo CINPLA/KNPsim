@@ -118,5 +118,3 @@ notes = "This simulation considers Hay model neuron in a cylindrical " + \
 state_saver = State_saver(fname, simulator, notes)
 
 time_solver.solve()
-
-interactive()
