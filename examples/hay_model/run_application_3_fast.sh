@@ -7,3 +7,4 @@ then
     unrar e neuron_input_1.rar
 fi
 python run_3d_column.py
+python run_3d_column_nofield.py

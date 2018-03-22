@@ -50,6 +50,7 @@ def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
     time_solver = Time_solver(simulator, dt, t_stop=T, rtol=rtol, relax=relax)
 
     # Set potential type
+    print(potential)
     if potential == "kirchoff":
         potential = KirchoffPotential(simulator)
         solver = "KNP"
@@ -66,7 +67,7 @@ def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
     # Set up state saver
     zoom = "zoom" if zoom else "long"
     fname = solver.lower() + "_" + zoom + ".h5"
-    fname = fname if not modified else "modified_diffusion.h5"
+    fname = fname if not modified else fname + "_modified_diffusion.h5"
     notes = "This simulation considers a step concentration profile in 1D," + \
         " solved with %s." % solver.replace("_", " ")
 
