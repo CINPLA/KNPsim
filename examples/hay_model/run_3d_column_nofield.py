@@ -112,9 +112,9 @@ potential = ZeroPotential(simulator)
 simulator.initialize_simulator()
 
 
-fname = "knp_column_neuron.h5"
+fname = "nofield_column_neuron.h5"
 notes = "This simulation considers Hay model neuron in a cylindrical " + \
-        "column, using knp"
+        "column, using no electric field"
 state_saver = State_saver(fname, simulator, notes)
 
 time_solver.solve()
