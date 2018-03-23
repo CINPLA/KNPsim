@@ -29,7 +29,7 @@ class AnalysisTools:
             self.ion_list[index] = ion
 
         self.time_series = hdfpy['time'][()] # read whole dataset to numpy array
-        space = hdfpy['FunctionSpace'].attrs['space'].decode("utf-8")
+        element = hdfpy['FunctionSpace'].attrs['element']
         order = int(hdfpy['FunctionSpace'].attrs['order'])
         hdfpy.close()
 
