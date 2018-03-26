@@ -8,3 +8,4 @@ then
 fi
 python run_3d_column.py
 python run_3d_column_nofield.py
+python knp_start_at_80_s.py
