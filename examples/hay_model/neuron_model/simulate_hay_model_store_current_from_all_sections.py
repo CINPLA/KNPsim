@@ -642,7 +642,7 @@ for isim in range(Nsims):
     y = y - y_offset
     z = z - z_offset
 
-    dict_ = {'ina': ina, 'ik': ik, 'ica': ica, 'ih': ih, 'il': ih,
+    dict_ = {'ina': ina, 'ik': ik, 'ica': ica, 'ih': ih, 'il': il,
              'VtimesA': v, 'imemb': imemb, 'Vsoma': np.array(Vsoma),
              'icap': icap, 'times': np.array(times), 'A': A, 'x': x, 'y': y,
              'z': z, 'ts_syn': np.array(ts_syn),
