@@ -2,7 +2,7 @@
 
 ## KNPsim
 KNPsim is a implementation of the KNP framework (see Halnes et al., https://www.ncbi.nlm.nih.gov/pubmed/27820827), using the FEniCS software for finite element problems.
-KNP is a framework for solving ion concentration dynamics by assuming the Nernst-Planck equation and electroneutrality. Neuronal input is provided as point sources to the system. This code was used to produce the results presented in Solbrå et al. 2018.
+KNP is a framework for solving ion concentration dynamics by assuming the Nernst-Planck equation and electroneutrality. Neuronal input is provided as point sources to the system. This code was used to produce the results presented in Solbrå et al. 2018: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006510
 
 # Installation
 KNPsim is currently only supported on Linux (but it should work on macOS as well). Make sure that you have [Anaconda](https://www.anaconda.com/download/) installed on your system. First clone or download the repo, then navigate to the top directory of the repo in a terminal and enter the following commands:
