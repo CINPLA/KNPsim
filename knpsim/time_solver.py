@@ -90,7 +90,7 @@ class Time_solver:
 
         # Update old solution
         assign(self.simulator.u, self.simulator.u_new)
-        if MPI.rank(mpi_comm_world()) == 0:
+        if MPI.rank(Mesh().mpi_comm()) == 0:
             print("Solved for the time {:02.03e} in simulation."
                   .format(self.t))
         self.t += self.dt
@@ -113,7 +113,7 @@ class Time_solver:
             sim_t0 = time.clock()
             self.solve_for_time_step()
             sim_t1 = time.clock()
-            if MPI.rank(mpi_comm_world()) == 0:
+            if MPI.rank(Mesh().mpi_comm()) == 0:
                 print("The time step was solved in {:02.03f} seconds.\n"
                       .format(sim_t1 - sim_t0))
 
