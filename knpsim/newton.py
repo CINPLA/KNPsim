@@ -21,7 +21,7 @@ def Newton_manual(J, F, u, u_res, bcs, deltas, atol, rtol, max_iter,
         A = assemble(J)
         b = assemble(-F)
         t1 = time.clock()
-        if MPI.rank(mpi_comm_world()) == 0:
+        if MPI.rank(Mesh().mpi_comm()) == 0:
             print("Assemble Jacobian took {:02.03f} seconds!".format(t1 - t0))
 
         # Solve linear system
@@ -31,7 +31,7 @@ def Newton_manual(J, F, u, u_res, bcs, deltas, atol, rtol, max_iter,
 
         solve(A, u_res.vector(), b)
         t1 = time.clock()
-        if MPI.rank(mpi_comm_world()) == 0:
+        if MPI.rank(Mesh().mpi_comm()) == 0:
             print("Linear solve took {:02.03f} seconds!".format(t1 - t0))
 
         # Update solution
