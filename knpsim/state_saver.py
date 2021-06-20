@@ -35,8 +35,10 @@ class State_saver(object):
         self.hdf.write(simulator.geometry.mesh, "geometry/mesh")
         self.hdf.write(Function(simulator.geometry.W), "geometry/MixedFunctionSpace")
         self.hdf.write(Function(simulator.geometry.V), "geometry/FunctionSpace")
-        self.hdf.write(vertex_to_dof_map(simulator.geometry.V).astype(float),
-                        'vertex_to_dof_map')
+        v2d_map = vertex_to_dof_map(simulator.geometry.V).astype(float)
+        v = Vector(MPI.comm_world, len(v2d_map))
+        v[:] = v2d_map
+        self.hdf.write(v, 'vertex_to_dof_map')
 
         attribute_holder = Function(simulator.geometry.V)
         attribute_holder = self.hdf.write(attribute_holder, 'attributes')
