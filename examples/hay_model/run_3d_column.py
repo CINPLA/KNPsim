@@ -23,7 +23,7 @@ y_coor = mesh.coordinates()[:, 1]
 ymin = y_coor.min()
 ymax = y_coor.max()
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print("Loaded mesh and create function spaces!")
 
 

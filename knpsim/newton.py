@@ -17,20 +17,20 @@ def Newton_manual(J, F, u, u_res, bcs, deltas, atol, rtol, max_iter,
     # Iterate until the residual criteria is meet, or max iterations
     while rel_res > rtol and residual > atol and Iter < max_iter:
         # Assemble system
-        t0 = time.clock()
+        t0 = time.perf_counter()
         A = assemble(J)
         b = assemble(-F)
-        t1 = time.clock()
+        t1 = time.perf_counter()
         if MPI.rank(Mesh().mpi_comm()) == 0:
             print("Assemble Jacobian took {:02.03f} seconds!".format(t1 - t0))
 
         # Solve linear system
         [bc.apply(A, b, u.vector()) for bc in bcs]
         [delta.apply(b) for delta in deltas]
-        t0 = time.clock()
+        t0 = time.perf_counter()
 
         solve(A, u_res.vector(), b)
-        t1 = time.clock()
+        t1 = time.perf_counter()
         if MPI.rank(Mesh().mpi_comm()) == 0:
             print("Linear solve took {:02.03f} seconds!".format(t1 - t0))
 

@@ -86,10 +86,10 @@ time_solver = Time_solver(simulator, dt, t_stop=2e0)
 potential = KirchoffPotential(simulator)
 
 # Initialize simulator
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print("initializing")
 simulator.initialize_simulator()
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print("initialized!")
 
 # Set up state saver

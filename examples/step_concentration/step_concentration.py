@@ -67,7 +67,8 @@ def step_concentration(zoom, potential, dt, T, x0, x1, relax, modified, rtol):
     # Set up state saver
     zoom = "zoom" if zoom else "long"
     fname = solver.lower() + "_" + zoom + ".h5"
-    fname = fname if not modified else fname = "modified_diffusion.h5"
+    if modified: 
+        fname = "modified_diffusion.h5"
     notes = "This simulation considers a step concentration profile in 1D," + \
         " solved with %s." % solver.replace("_", " ")
 

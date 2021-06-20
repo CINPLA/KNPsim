@@ -44,7 +44,7 @@ class Ion:
         elif isinstance(initial_condition, Function):
             self.initial_condition = initial_condition
         else:
-            if MPI.rank(mpi_comm_world()) == 0:
+            if MPI.rank(MPI.comm_world) == 0:
                 print("Initial_condition is unexpected type! Exiting...")
             sys.exit(1)
         # TODO: Accept more types...
