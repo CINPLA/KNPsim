@@ -5,7 +5,7 @@ import numpy as np
 
 data = scipy.io.loadmat('neuron_input_1.hdf5')
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print(data.keys())
 
 x = data['x']
@@ -16,7 +16,7 @@ xlen = x.max() - x.min()
 ylen = y.max() - y.min()
 zlen = z.max() - z.min()
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print(xlen, ylen, zlen)
 
 padding_fraction = 0.1
@@ -47,7 +47,7 @@ resolution = 40
 
 mesh = generate_mesh(domain, resolution)
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print(mesh.coordinates().shape)
 
 f = HDF5File(mesh.mpi_comm(), "mesh_co.hdf5", 'w')

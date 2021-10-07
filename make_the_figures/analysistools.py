@@ -33,7 +33,7 @@ class AnalysisTools:
         order = int(hdfpy['FunctionSpace'].attrs['order'])
         hdfpy.close()
 
-        self.hdf = HDF5File(mpi_comm_world(), filename, 'r')
+        self.hdf = HDF5File(MPI.comm_world, filename, 'r')
         self.mesh = Mesh()
         self.hdf.read(self.mesh,"geometry/mesh", False)
         # self.dim = self.mesh.geometry().dim()

@@ -18,9 +18,9 @@ class State_saver(object):
     """
 
     def __new__(cls, filename, simulator, notes, save_step=1):
-        if MPI.sum(mpi_comm_world(), MPI.rank(mpi_comm_world())) > 0:
+        if MPI.sum(MPI.comm_world, MPI.rank(MPI.comm_world)) > 0:
             if not has_hdf5_parallel():
-                if MPI.rank(mpi_comm_world()) == 0:
+                if MPI.rank(MPI.comm_world) == 0:
                     print("WARNING: HDF5 is not built with MPI, and the state saver" + \
                           " will not work.\nEither build HDF5 with MPI or run in serial.")
                 return None
@@ -35,8 +35,10 @@ class State_saver(object):
         self.hdf.write(simulator.geometry.mesh, "geometry/mesh")
         self.hdf.write(Function(simulator.geometry.W), "geometry/MixedFunctionSpace")
         self.hdf.write(Function(simulator.geometry.V), "geometry/FunctionSpace")
-        self.hdf.write(vertex_to_dof_map(simulator.geometry.V).astype(float),
-                        'vertex_to_dof_map')
+        v2d_map = vertex_to_dof_map(simulator.geometry.V).astype(float)
+        v = Vector(MPI.comm_world, len(v2d_map))
+        v[:] = v2d_map
+        self.hdf.write(v, 'vertex_to_dof_map')
 
         attribute_holder = Function(simulator.geometry.V)
         attribute_holder = self.hdf.write(attribute_holder, 'attributes')
@@ -75,10 +77,10 @@ class State_saver(object):
         """
         self.simtime_end = time.time()
         simtime = self.simtime_end - self.simtime_start
-        n_procs = MPI.size(mpi_comm_world())
+        n_procs = MPI.size(MPI.comm_world)
         self.hdf.close()
         f = h5py.File(self.filename, 'r+')
-        if MPI.rank(mpi_comm_world()) == 0:
+        if MPI.rank(MPI.comm_world) == 0:
             grp = f.create_group("simulation stats")
             grp.attrs['n_procs'] = n_procs
             grp.attrs['simtime'] = simtime

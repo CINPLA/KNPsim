@@ -29,7 +29,7 @@ class Geometry:
             if len(mesh) == self.dim:
                 self.mesh = domain_type[self.dim-1](*mesh)
             else:
-                if MPI.rank(mpi_comm_world()) == 0:
+                if MPI.rank(MPI.comm_world) == 0:
                     print("Dimension mismatch in set_geometry!" + \
                           "Mesh does not match dimension")
                     print(str(self.dim))
@@ -37,13 +37,13 @@ class Geometry:
                 sys.exit()
 
         elif isinstance(mesh, str):
-            if MPI.rank(mpi_comm_world()) == 0:
+            if MPI.rank(MPI.comm_world) == 0:
                 print("Interpreting mesh input as filename...")
             try:
                 self.mesh = Mesh(mesh)
                 self.dim = self.mesh.geometry().dim()
             except IOError:
-                if MPI.rank(mpi_comm_world()) == 0:
+                if MPI.rank(MPI.comm_world) == 0:
                     print("Could not find the file spesified, exiting....")
                 sys.exit(1)
 
@@ -52,7 +52,7 @@ class Geometry:
             self.dim = self.mesh.geometry().dim()
 
         else:
-            if MPI.rank(mpi_comm_world()) == 0:
+            if MPI.rank(MPI.comm_world) == 0:
                 print("Input not understood! Exiting...")
             sys.exit(1)
 

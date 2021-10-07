@@ -110,9 +110,9 @@ class Time_solver:
         provided that state_saver has been initialized.
         """
         while self.t <= self.t_stop:
-            sim_t0 = time.clock()
+            sim_t0 = time.perf_counter()
             self.solve_for_time_step()
-            sim_t1 = time.clock()
+            sim_t1 = time.perf_counter()
             if MPI.rank(Mesh().mpi_comm()) == 0:
                 print("The time step was solved in {:02.03f} seconds.\n"
                       .format(sim_t1 - sim_t0))
